@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.loginInput {
+  background-color: rgba(255, 255, 255, 0.269);
+  border-radius: 10px;
+  border-bottom: 3px solid #2c003e;
+  position: relative;
+  padding-left: 10px;
+  font-size: medium;
+}
+
+@layer utilities {
+  .InputLabel {
+    @apply pl-[10px] text-white text-[16px] font-semibold mt-[10px]
+        mb-[5px];
+  }
+}
