@@ -1,12 +1,18 @@
-import { useAuth } from "@/context/AuthContext"; // 🔥 make sure this is correct
+import { useAuth } from "@/context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, ImageBackground, Text } from "react-native";
+
+const AGE_VERIFICATION_KEY = "@deckedOut:ageVerified";
+const TERMS_ACCEPTED_KEY = "@deckedOut:termsAccepted";
+const TUTORIAL_COMPLETED_KEY = "@deckedOut:tutorialCompleted";
 
 export default function SplashScreenPage() {
   const router = useRouter();
-  const { user, loading } = useAuth(); // ✅ Auth context
+  const { user, loading } = useAuth();
+  const [checkingVerification, setCheckingVerification] = useState(true);
 
   useEffect(() => {
     const prepare = async () => {
@@ -14,15 +20,35 @@ export default function SplashScreenPage() {
         // Keep splash screen visible
         await SplashScreen.preventAutoHideAsync();
 
-        // Simulate loading delay (optional)
+        // Simulate loading delay
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         if (!loading) {
-          // ✅ Redirect based on auth status
-          if (user) {
-            router.replace("/categories");
+          // Check age verification and terms acceptance
+          const [ageVerified, termsAccepted] = await Promise.all([
+            AsyncStorage.getItem(AGE_VERIFICATION_KEY),
+            AsyncStorage.getItem(TERMS_ACCEPTED_KEY),
+          ]);
+
+          setCheckingVerification(false);
+
+          // Navigate based on verification status
+          if (!ageVerified) {
+            router.replace("/ageVerification");
+          } else if (!termsAccepted) {
+            router.replace("/terms");
           } else {
-            router.replace("/login"); // or /signUp
+            // Check if tutorial is completed
+            const tutorialCompleted = await AsyncStorage.getItem(
+              TUTORIAL_COMPLETED_KEY
+            );
+            if (!tutorialCompleted && user) {
+              router.replace("/tutorial");
+            } else if (user) {
+              router.replace("/categories");
+            } else {
+              router.replace("/login");
+            }
           }
 
           // Hide splash after navigation
@@ -31,7 +57,7 @@ export default function SplashScreenPage() {
       } catch (err) {
         console.warn("Splash screen error:", err);
         await SplashScreen.hideAsync();
-        router.replace("/login");
+        router.replace("/ageVerification");
       }
     };
 

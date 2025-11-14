@@ -1,6 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Analytics, getAnalytics, isSupported } from "firebase/analytics";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import {
+  Auth,
   getAuth,
   getReactNativePersistence,
   initializeAuth,
@@ -21,7 +23,7 @@ const firebaseConfig = {
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 // ✅ Initialize Auth once
-let auth;
+let auth: Auth;
 try {
   auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage),
@@ -31,4 +33,14 @@ try {
   auth = getAuth(app);
 }
 
-export { app, auth };
+// Initialize Analytics (only on web for now, React Native requires native setup)
+let analytics: Analytics | null = null;
+if (typeof window !== "undefined") {
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+    }
+  });
+}
+
+export { analytics, app, auth };

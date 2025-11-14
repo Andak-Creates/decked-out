@@ -1,6 +1,6 @@
 import { auth } from "@/firebaseConfig";
-import { signInWithEmailAndPassword } from "@firebase/auth";
 import { useRouter } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
