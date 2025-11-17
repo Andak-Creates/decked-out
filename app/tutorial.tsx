@@ -1,14 +1,8 @@
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import {
-  ImageBackground,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
 
 const TUTORIAL_COMPLETED_KEY = "@deckedOut:tutorialCompleted";
 
@@ -101,12 +95,14 @@ const Tutorial = () => {
           </View>
 
           {/* Progress Dots */}
-          <View className="flex-row justify-center mt-8 space-x-2">
+          <View className="flex-row justify-center gap-2 mt-8 space-x-2">
             {steps.map((_, index) => (
               <View
                 key={index}
                 className={`h-2 rounded-full ${
-                  index === currentStep ? "bg-purple-500 w-8" : "bg-white/30 w-2"
+                  index === currentStep
+                    ? "bg-purple-500 w-8"
+                    : "bg-white/30 w-2"
                 }`}
               />
             ))}
@@ -114,7 +110,7 @@ const Tutorial = () => {
         </View>
 
         {/* Buttons */}
-        <View className="space-y-3">
+        <View className="space-y-3 flex flex-col gap-4">
           <TouchableOpacity
             onPress={handleNext}
             className="bg-purple-600 py-4 rounded-xl"
@@ -141,4 +137,3 @@ const Tutorial = () => {
 };
 
 export default Tutorial;
-

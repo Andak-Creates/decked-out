@@ -22,13 +22,13 @@ export const Decks = [
             type: "truth",
             text: "What's the most embarrassing thing that's ever happened to you?",
             timer: null,
-            gender: null, // Gender-neutral
+            gender: null,
           },
           {
             type: "truth",
             text: "Who was your first crush?",
             timer: null,
-            gender: null, // Gender-neutral
+            gender: null,
           },
           {
             type: "truth",
@@ -75,13 +75,13 @@ export const Decks = [
             type: "dare",
             text: "Do your best impression of someone in the room",
             timer: null,
-            gender: null, // Gender-neutral
+            gender: null,
           },
           {
             type: "dare",
-            text: "Let someone go through your phone for 1 minute",
+            text: "Let {PlayerB} go through your phone for 1 minute",
             timer: null,
-            gender: null, // Gender-neutral
+            gender: null,
           },
           {
             type: "dare",
@@ -115,7 +115,7 @@ export const Decks = [
           },
           {
             type: "dare",
-            text: "Let someone draw on your face with a washable marker",
+            text: "Let {PlayerB} draw on your face with a washable marker",
             timer: null,
           },
           {
@@ -123,42 +123,42 @@ export const Decks = [
             text: "Text your ex and say 'hey'",
             timer: null,
           },
-          // Example card with player assignments and gender filter
+          // Player interaction cards with proper second person
           {
             type: "dare",
-            text: "{PlayerA} should kiss {PlayerB}'s neck",
+            text: "Kiss {PlayerB}'s neck",
             timer: null,
-            requiresOppositeGender: true, // When gender filter is ON, Player A and B will be opposite genders
+            requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} must give {PlayerB} a 30 second massage",
+            text: "Give {PlayerB} a 30 second massage",
             timer: 30,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} must let {PlayerB} go through their phone for 1 minute",
+            text: "Let {PlayerB} go through your phone for 1 minute",
             timer: 60,
-            requiresOppositeGender: true,
+            requiresOppositeGender: false,
           },
           {
             type: "dare",
-            text: "{PlayerA} has to whisper something sexy in {PlayerB}'s ear",
+            text: "Whisper something sexy in {PlayerB}'s ear",
             timer: null,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} must dance seductively for {PlayerB}",
+            text: "Dance seductively for {PlayerB}",
             timer: 30,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} has to let {PlayerB} post one thing on their social media",
+            text: "Let {PlayerB} post one thing on your social media",
             timer: null,
-            requiresOppositeGender: true,
+            requiresOppositeGender: false,
           },
         ],
       },
@@ -340,7 +340,7 @@ export const Decks = [
           },
           {
             type: "dare",
-            text: "Let someone read your last 5 text messages",
+            text: "Let {PlayerB} read your last 5 text messages out loud",
             timer: null,
           },
           {
@@ -370,7 +370,7 @@ export const Decks = [
           },
           {
             type: "dare",
-            text: "Let someone go through your photos for 2 minutes",
+            text: "Let {PlayerB} go through your photos for 2 minutes",
             timer: null,
           },
           {
@@ -383,48 +383,48 @@ export const Decks = [
             text: "Let the group see your browser history",
             timer: null,
           },
-          // Player interaction cards - Risky
+          // Player interaction cards - Risky (fixed to second person)
           {
             type: "dare",
-            text: "{PlayerA} must kiss {PlayerB} passionately for 10 seconds",
+            text: "Kiss {PlayerB} passionately for 10 seconds",
             timer: 10,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} has to let {PlayerB} see their entire photo gallery",
+            text: "Let {PlayerB} see your entire photo gallery",
             timer: 120,
-            requiresOppositeGender: true,
+            requiresOppositeGender: false,
           },
           {
             type: "dare",
-            text: "{PlayerA} must give {PlayerB} a lap dance",
+            text: "Give {PlayerB} a lap dance",
             timer: 60,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} has to send {PlayerB} a sexy text right now",
+            text: "Send {PlayerB} a sexy text right now",
             timer: null,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} must let {PlayerB} control their phone for 2 minutes",
+            text: "Let {PlayerB} control your phone for 2 minutes",
             timer: 120,
-            requiresOppositeGender: true,
+            requiresOppositeGender: false,
           },
           {
             type: "dare",
-            text: "{PlayerA} has to strip down to their underwear for {PlayerB}",
+            text: "Strip down to your underwear for {PlayerB}",
             timer: 30,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} must let {PlayerB} read their private messages",
+            text: "Let {PlayerB} read your private messages",
             timer: 60,
-            requiresOppositeGender: true,
+            requiresOppositeGender: false,
           },
         ],
       },
@@ -537,7 +537,7 @@ export const Decks = [
 
         // cards
         cards: [
-          // Truth cards - Sin City (most intense)
+          // Truth cards - Sin City
           {
             type: "truth",
             text: "What's the most depraved thing you've ever done?",
@@ -598,7 +598,7 @@ export const Decks = [
             text: "What's something you've done that would shock everyone here?",
             timer: null,
           },
-          // Dare cards - Sin City (most intense, some with timers)
+          // Dare cards - Sin City
           {
             type: "dare",
             text: "Strip completely naked for 30 seconds",
@@ -606,7 +606,7 @@ export const Decks = [
           },
           {
             type: "dare",
-            text: "Let someone go through your entire phone for 3 minutes",
+            text: "Let {PlayerB} go through your entire phone for 3 minutes",
             timer: 180,
           },
           {
@@ -636,7 +636,7 @@ export const Decks = [
           },
           {
             type: "dare",
-            text: "Let someone post whatever they want on your social media",
+            text: "Let {PlayerB} post whatever they want on your social media",
             timer: null,
           },
           {
@@ -656,57 +656,57 @@ export const Decks = [
           },
           {
             type: "dare",
-            text: "Let someone control your phone for 5 minutes",
+            text: "Let {PlayerB} control your phone for 5 minutes",
             timer: 300,
           },
-          // Player interaction cards - Sin City (most intense)
+          // Player interaction cards - Sin City (fixed to second person)
           {
             type: "dare",
-            text: "{PlayerA} must make out with {PlayerB} for 30 seconds",
+            text: "Make out with {PlayerB} for 30 seconds",
             timer: 30,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} has to let {PlayerB} see their most explicit photos",
+            text: "Let {PlayerB} see your most explicit photos",
             timer: 60,
-            requiresOppositeGender: true,
+            requiresOppositeGender: false,
           },
           {
             type: "dare",
-            text: "{PlayerA} must give {PlayerB} a full body massage",
+            text: "Give {PlayerB} a full body massage",
             timer: 120,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} has to send {PlayerB} a nude photo",
+            text: "Send {PlayerB} a nude photo",
             timer: null,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} must strip completely naked for {PlayerB}",
+            text: "Strip completely naked for {PlayerB}",
             timer: 30,
             requiresOppositeGender: true,
           },
           {
             type: "dare",
-            text: "{PlayerA} has to let {PlayerB} control their phone for 5 minutes",
+            text: "Let {PlayerB} control your phone for 5 minutes",
             timer: 300,
-            requiresOppositeGender: true,
+            requiresOppositeGender: false,
           },
           {
             type: "dare",
-            text: "{PlayerA} must do whatever {PlayerB} tells them to do for 1 minute",
+            text: "Do whatever {PlayerB} tells you to do for 1 minute",
             timer: 60,
-            requiresOppositeGender: true,
+            requiresOppositeGender: false,
           },
           {
             type: "dare",
-            text: "{PlayerA} has to let {PlayerB} post whatever they want on their social media",
+            text: "Let {PlayerB} post whatever they want on your social media",
             timer: null,
-            requiresOppositeGender: true,
+            requiresOppositeGender: false,
           },
         ],
       },

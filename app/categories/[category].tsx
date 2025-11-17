@@ -205,18 +205,18 @@ const CardCategory = () => {
 
       <View className="flex-1 px-6 pt-16 pb-8">
         {/* Header with back button */}
-        <View className="flex-row items-center mb-6">
+        <View className="flex-row items-center mb-6 mt-[30px] pt-[30px] ">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="bg-black/50 px-4 py-2 rounded-xl mr-4"
+            className="bg-black/50 px-4 py-2 rounded-xl mr-4 absolute top-0 left-0"
           >
             <Text className="text-white text-lg">←</Text>
           </TouchableOpacity>
-          <View className="flex-1">
-            <Text className="text-white text-3xl font-bold">
+          <View className="flex-1 mt-[30px]">
+            <Text className="text-white text-[40px] font-bold">
               {currentCategory.name}
             </Text>
-            <Text className="text-white/70 text-sm mt-1">
+            <Text className="text-white/70 text-sm text-[16px] mt-1">
               {currentCategory.description}
             </Text>
           </View>
@@ -225,7 +225,8 @@ const CardCategory = () => {
         {/* Decks List */}
         <FlatList
           contentContainerStyle={{
-            paddingBottom: 20,
+            paddingBottom: 50,
+            marginTop: 10,
           }}
           data={currentCategory.decks}
           keyExtractor={(deck) => deck.name}

@@ -1,5 +1,6 @@
-import { auth } from "@/firebaseConfig";
 import { useAuth } from "@/context/AuthContext";
+import { auth } from "@/firebaseConfig";
+import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import React, { useState } from "react";
@@ -7,12 +8,10 @@ import {
   Alert,
   ImageBackground,
   ScrollView,
-  Switch,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import * as Haptics from "expo-haptics";
 
 const Settings = () => {
   const router = useRouter();
@@ -20,31 +19,27 @@ const Settings = () => {
   const [loading, setLoading] = useState(false);
 
   const handleLogout = () => {
-    Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: async () => {
+          setLoading(true);
+          try {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            await signOut(auth);
+            router.replace("/login");
+          } catch (error: any) {
+            Alert.alert("Error", "Failed to logout. Please try again.");
+            setLoading(false);
+          }
         },
-        {
-          text: "Logout",
-          style: "destructive",
-          onPress: async () => {
-            setLoading(true);
-            try {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              await signOut(auth);
-              router.replace("/login");
-            } catch (error: any) {
-              Alert.alert("Error", "Failed to logout. Please try again.");
-              setLoading(false);
-            }
-          },
-        },
-      ]
-    );
+      },
+    ]);
   };
 
   return (
@@ -57,7 +52,11 @@ const Settings = () => {
 
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 40 }}
+        contentContainerStyle={{
+          paddingHorizontal: 24,
+          paddingTop: 60,
+          paddingBottom: 40,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
@@ -166,4 +165,3 @@ const Settings = () => {
 };
 
 export default Settings;
-

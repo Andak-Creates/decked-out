@@ -45,9 +45,9 @@ const Terms = () => {
     >
       <View className="absolute inset-0 bg-black/60" />
 
-      <View className="flex-1 px-6 py-8">
+      <View className="flex-1 px-6 py-8 mt-[50px]">
         <ScrollView
-          className="flex-1"
+          className="flex-1 pt-[30px] pb-[20px]"
           contentContainerStyle={{ paddingBottom: 20 }}
           showsVerticalScrollIndicator={false}
         >

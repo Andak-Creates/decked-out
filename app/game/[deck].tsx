@@ -76,103 +76,77 @@ const Game = () => {
   };
 
   // Assign players to card roles based on gender filter
-  const assignPlayersToCard = (card: Card): string => {
+  const assignPlayersToCard = (
+    card: Card,
+    playerIndex: number = currentPlayerIndex
+  ): string => {
     if (!card || !card.text) {
       return "Card error - please try again";
     }
 
     let cardText = card.text;
 
-    // Check if card has player placeholders
-    const hasPlayerA =
-      cardText.includes("{PlayerA}") || cardText.includes("{Player A}");
+    // Check if card needs PlayerB
     const hasPlayerB =
       cardText.includes("{PlayerB}") || cardText.includes("{Player B}");
 
-    if (!hasPlayerA && !hasPlayerB) {
-      // No player placeholders, return as is
+    // If no PlayerB placeholder, return the card as-is
+    if (!hasPlayerB) {
       return cardText;
     }
 
+    // If we don't have enough players, use a fallback
     if (parsedPlayers.length < 2) {
-      // Not enough players, use generic names
-      return cardText
-        .replace(/{PlayerA}|{Player A}/g, "Player A")
-        .replace(/{PlayerB}|{Player B}/g, "Player B");
+      return cardText.replace(/{PlayerB}|{Player B}/g, "another player");
     }
 
-    let playerA: Player | null = null;
+    // Get the current player (whose turn it is)
+    const currentPlayer = parsedPlayers[playerIndex];
+
+    // Helper to pick any other player (excluding the current player)
+    const getRandomOtherPlayer = () => {
+      const others = parsedPlayers.filter((_, idx) => idx !== playerIndex);
+      return others[Math.floor(Math.random() * others.length)];
+    };
+
     let playerB: Player | null = null;
 
+    // Gender filter logic - only applies if the card requires opposite gender
     if (shouldFilterByGender && card.requiresOppositeGender) {
-      // Gender filter is ON and card requires opposite genders
-      const currentPlayer = parsedPlayers[currentPlayerIndex];
-      const currentPlayerGender = currentPlayer?.gender;
+      const currentGender = currentPlayer.gender;
 
-      if (currentPlayerGender) {
+      if (currentGender) {
         // Find players with opposite gender
-        const oppositeGenderPlayers = parsedPlayers.filter(
+        const oppositePlayers = parsedPlayers.filter(
           (p, idx) =>
-            idx !== currentPlayerIndex &&
-            p.gender &&
-            p.gender !== currentPlayerGender
+            idx !== playerIndex && p.gender && p.gender !== currentGender
         );
 
-        if (oppositeGenderPlayers.length > 0) {
-          // Assign current player as Player A, opposite gender as Player B
-          playerA = currentPlayer;
+        if (oppositePlayers.length > 0) {
+          // Randomly select from opposite gender players
           playerB =
-            oppositeGenderPlayers[
-              Math.floor(Math.random() * oppositeGenderPlayers.length)
-            ];
+            oppositePlayers[Math.floor(Math.random() * oppositePlayers.length)];
         } else {
-          // No opposite gender available - show warning but continue
+          // No opposite gender available, fallback to any other player
           console.warn(
             "No opposite gender players available for gender filter requirement"
           );
-          // Assign randomly but try to match requirement
-          const availablePlayers = parsedPlayers.filter(
-            (_, idx) => idx !== currentPlayerIndex
-          );
-          if (availablePlayers.length > 0) {
-            playerA = currentPlayer;
-            playerB =
-              availablePlayers[
-                Math.floor(Math.random() * availablePlayers.length)
-              ];
-          }
+          playerB = getRandomOtherPlayer();
         }
       } else {
-        // Current player has no gender, assign randomly
-        const shuffled = shuffleArray([...parsedPlayers]);
-        playerA = shuffled[0];
-        playerB = shuffled[1];
+        // Current player has no gender set, pick any other player
+        playerB = getRandomOtherPlayer();
       }
     } else {
-      // Gender filter is OFF or card doesn't require opposite genders - assign randomly
-      const shuffled = shuffleArray([...parsedPlayers]);
-      playerA = shuffled[0];
-      playerB = shuffled[1];
+      // Gender filter OFF or not required → pick any other player
+      playerB = getRandomOtherPlayer();
     }
 
-    // Replace placeholders with actual player names
-    if (hasPlayerA && playerA) {
-      cardText = cardText.replace(
-        /{PlayerA}|{Player A}/g,
-        playerA.name || "Player A"
-      );
-    } else if (hasPlayerA) {
-      cardText = cardText.replace(/{PlayerA}|{Player A}/g, "Player A");
-    }
-
-    if (hasPlayerB && playerB) {
-      cardText = cardText.replace(
-        /{PlayerB}|{Player B}/g,
-        playerB.name || "Player B"
-      );
-    } else if (hasPlayerB) {
-      cardText = cardText.replace(/{PlayerB}|{Player B}/g, "Player B");
-    }
+    // Replace PlayerB placeholder with the selected player's name
+    cardText = cardText.replace(
+      /{PlayerB}|{Player B}/g,
+      playerB?.name || "another player"
+    );
 
     return cardText;
   };
@@ -343,9 +317,9 @@ const Game = () => {
       const nextIndex = currentCardIndex + 1;
       setCurrentCardIndex(nextIndex);
 
-      // Assign players to the next card
+      // Assign players to the next card - PASS the nextPlayerIndex!
       const nextCard = shuffledCards[nextIndex];
-      const nextCardText = assignPlayersToCard(nextCard);
+      const nextCardText = assignPlayersToCard(nextCard, nextPlayerIndex);
       setCurrentCardText(nextCardText);
 
       // Set timer if next card has one
@@ -364,7 +338,7 @@ const Game = () => {
 
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    // Check if we've run out of cards (only for non-filtered games)
+    // Check if we've run out of cards
     if (
       !shouldFilterByGender &&
       shuffledCards.length > 0 &&
@@ -397,9 +371,9 @@ const Game = () => {
             scaleAnimation.setValue(1);
             setIsTimerRunning(false);
 
-            // Assign players to first card
+            // Assign players to first card with playerIndex 0
             if (shuffled.length > 0) {
-              const firstCardText = assignPlayersToCard(shuffled[0]);
+              const firstCardText = assignPlayersToCard(shuffled[0], 0);
               setCurrentCardText(firstCardText);
 
               if (shuffled[0].timer) {
@@ -468,7 +442,7 @@ const Game = () => {
     >
       <View className="flex-1 justify-between px-6 py-8">
         {/* Header */}
-        <View className="flex-row justify-between items-center mb-4">
+        <View className="flex-row justify-between items-center mb-4 mt-[30px]">
           <TouchableOpacity
             onPress={() => router.back()}
             className="bg-black/50 px-4 py-2 rounded-lg"
@@ -532,7 +506,10 @@ const Game = () => {
               <Animated.View
                 className="bg-black/70 rounded-3xl p-8 min-h-[400px] justify-center items-center border-4"
                 style={{
-                  borderColor: cardTypeColor,
+                  // Only show colored border AFTER card is flipped
+                  borderColor: cardFlipped
+                    ? getCardTypeColor(currentCard.type)
+                    : "#666666",
                   transform: [{ scale: scaleAnimation }],
                 }}
               >
@@ -550,7 +527,9 @@ const Game = () => {
                     {/* Card Type Badge */}
                     <View
                       className="px-4 py-2 rounded-full mb-6"
-                      style={{ backgroundColor: cardTypeColor }}
+                      style={{
+                        backgroundColor: getCardTypeColor(currentCard.type),
+                      }}
                     >
                       <Text className="text-white font-bold text-lg uppercase">
                         {currentCard.type}
@@ -590,7 +569,7 @@ const Game = () => {
                 </Text>
               </TouchableOpacity>
             ) : (
-              <View className="space-y-3">
+              <View className="space-y-3 flex flex-col gap-4">
                 <TouchableOpacity
                   onPress={nextCard}
                   className="bg-green-600 py-4 rounded-xl"

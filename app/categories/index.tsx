@@ -164,16 +164,18 @@ const index = () => {
 
       <View className="flex-1 px-6 pt-16 pb-8">
         {/* Header */}
-        <View className="flex-row items-center justify-between mb-8">
+        <View className="flex-row items-center relative pt-[60px] justify-between mb-8 mt-[20px]">
           <View className="flex-1 items-center">
             <Text className="text-white text-4xl font-bold text-center mb-2">
               What are we in the mood for?
             </Text>
             <View className="h-1 w-24 bg-purple-500 rounded-full" />
           </View>
+
+          {/* Settings button */}
           <TouchableOpacity
             onPress={() => router.push("/settings")}
-            className="bg-black/50 px-4 py-2 rounded-xl ml-4"
+            className="bg-black/50 px-4 py-2 rounded-xl ml-4 absolute top-0 right-0"
           >
             <Text className="text-white text-xl">⚙️</Text>
           </TouchableOpacity>
@@ -181,7 +183,8 @@ const index = () => {
 
         <FlatList
           contentContainerStyle={{
-            paddingBottom: 20,
+            paddingBottom: 50,
+            paddingTop: 20,
           }}
           data={Decks}
           keyExtractor={(item) => item.slug}

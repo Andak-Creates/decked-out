@@ -6,6 +6,8 @@ import {
   Alert,
   Animated,
   ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   Switch,
   Text,
@@ -234,157 +236,161 @@ const DeckSetUp = () => {
     >
       {/* Dark overlay */}
       <View className="absolute inset-0 bg-black/40" />
-
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{
-          paddingHorizontal: 24,
-          paddingTop: 60,
-          paddingBottom: 40,
-        }}
-        showsVerticalScrollIndicator={false}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
       >
-        {/* Header */}
-        <View className="mb-8">
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="bg-black/50 px-4 py-2 rounded-xl self-start mb-4"
-          >
-            <Text className="text-white text-lg">← Back</Text>
-          </TouchableOpacity>
-
-          <View
-            className="rounded-3xl p-6 mb-6"
-            style={{
-              backgroundColor: "rgba(0, 0, 0, 0.6)",
-              borderWidth: 2,
-              borderColor: colors.primary,
-              shadowColor: colors.primary,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.5,
-              shadowRadius: 12,
-              elevation: 8,
-            }}
-          >
-            <View className="flex-row items-center mb-2">
-              <View
-                className="w-12 h-12 rounded-xl items-center justify-center mr-3"
-                style={{
-                  backgroundColor: colors.primary,
-                  opacity: 0.3,
-                }}
-              >
-                <Text className="text-2xl">🎮</Text>
-              </View>
-              <View className="flex-1">
-                <Text className="text-white text-3xl font-bold">
-                  {currentDeck?.name}
-                </Text>
-                <Text className="text-white/70 text-sm mt-1">
-                  {currentDeck?.description}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-
-        {/* Player inputs (if multiplayer) */}
-        {isMultiplayer && (
-          <View className="mb-6">
-            <View className="flex-row items-center mb-4">
-              <Text className="text-white text-2xl font-bold mr-2">
-                👥 Players
-              </Text>
-              <View
-                className="h-1 flex-1 rounded-full"
-                style={{ backgroundColor: colors.primary, opacity: 0.5 }}
-              />
-            </View>
-
-            {players.map((player, index) => (
-              <PlayerCard
-                key={index}
-                player={player}
-                index={index}
-                colors={colors}
-                onUpdateName={(text) => updatePlayers(text, index)}
-                onUpdateGender={(gender) => updatePlayerGender(gender, index)}
-                onRemove={() => removePlayer(index)}
-                canRemove={players.length > 1}
-              />
-            ))}
-
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            paddingTop: 60,
+            paddingBottom: 40,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header */}
+          <View className="mb-8">
             <TouchableOpacity
-              onPress={addPlayer}
-              className="rounded-2xl py-4 mt-2"
+              onPress={() => router.back()}
+              className="bg-black/50 px-4 py-2 rounded-xl self-start mb-4"
+            >
+              <Text className="text-white text-lg">← Back</Text>
+            </TouchableOpacity>
+
+            <View
+              className="rounded-3xl p-6 mb-6 mt-[30px]"
               style={{
-                backgroundColor: colors.primary,
+                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                borderWidth: 2,
+                borderColor: colors.primary,
                 shadowColor: colors.primary,
                 shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.4,
-                shadowRadius: 8,
-                elevation: 6,
+                shadowOpacity: 0.5,
+                shadowRadius: 12,
+                elevation: 8,
               }}
             >
-              <Text className="text-white text-center font-bold text-lg">
-                + Add Player
-              </Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {/* Gender filter */}
-        <View
-          className="rounded-2xl p-5 mb-6"
-          style={{
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            borderWidth: 1,
-            borderColor: colors.primary,
-            opacity: 0.8,
-          }}
-        >
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center flex-1">
-              <Text className="text-2xl mr-3">🔀</Text>
-              <View>
-                <Text className="text-white text-lg font-semibold">
-                  Filter by Gender
-                </Text>
-                <Text className="text-white/60 text-sm mt-1">
-                  Show gender-specific cards
-                </Text>
+              <View className="flex-row items-center mb-2">
+                <View
+                  className="w-12 h-12 rounded-xl items-center justify-center mr-3"
+                  style={{
+                    backgroundColor: colors.primary,
+                    opacity: 0.3,
+                  }}
+                >
+                  <Text className="text-2xl">🎮</Text>
+                </View>
+                <View className="flex-1">
+                  <Text className="text-white text-3xl font-bold">
+                    {currentDeck?.name}
+                  </Text>
+                  <Text className="text-white/70 text-sm mt-1">
+                    {currentDeck?.description}
+                  </Text>
+                </View>
               </View>
             </View>
-            <Switch
-              value={filterByGender}
-              onValueChange={(value) => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setFilterByGender(value);
-              }}
-              trackColor={{ false: "#666", true: colors.primary }}
-              thumbColor={filterByGender ? "#fff" : "#f4f3f4"}
-            />
           </View>
-        </View>
 
-        {/* Start Game Button */}
-        <TouchableOpacity
-          onPress={startGame}
-          className="rounded-2xl py-5 mt-4"
-          style={{
-            backgroundColor: "#10b981",
-            shadowColor: "#10b981",
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: 0.5,
-            shadowRadius: 12,
-            elevation: 10,
-          }}
-        >
-          <Text className="text-white text-center font-bold text-xl">
-            🚀 Start Game
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+          {/* Player inputs (if multiplayer) */}
+          {isMultiplayer && (
+            <View className="mb-6">
+              <View className="flex-row items-center mb-4">
+                <Text className="text-white text-2xl font-bold mr-2">
+                  👥 Players
+                </Text>
+                <View
+                  className="h-1 flex-1 rounded-full"
+                  style={{ backgroundColor: colors.primary, opacity: 0.5 }}
+                />
+              </View>
+
+              {players.map((player, index) => (
+                <PlayerCard
+                  key={index}
+                  player={player}
+                  index={index}
+                  colors={colors}
+                  onUpdateName={(text) => updatePlayers(text, index)}
+                  onUpdateGender={(gender) => updatePlayerGender(gender, index)}
+                  onRemove={() => removePlayer(index)}
+                  canRemove={players.length > 1}
+                />
+              ))}
+
+              <TouchableOpacity
+                onPress={addPlayer}
+                className="rounded-2xl py-4 mt-2"
+                style={{
+                  backgroundColor: colors.primary,
+                  shadowColor: colors.primary,
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 8,
+                  elevation: 6,
+                }}
+              >
+                <Text className="text-white text-center font-bold text-lg">
+                  + Add Player
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Gender filter */}
+          <View
+            className="rounded-2xl p-5 mb-6"
+            style={{
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              borderWidth: 1,
+              borderColor: colors.primary,
+              opacity: 0.8,
+            }}
+          >
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center flex-1">
+                <Text className="text-2xl mr-3">🔀</Text>
+                <View>
+                  <Text className="text-white text-lg font-semibold">
+                    Filter by Gender
+                  </Text>
+                  <Text className="text-white/60 text-sm mt-1">
+                    Show gender-specific cards
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={filterByGender}
+                onValueChange={(value) => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setFilterByGender(value);
+                }}
+                trackColor={{ false: "#666", true: colors.primary }}
+                thumbColor={filterByGender ? "#fff" : "#f4f3f4"}
+              />
+            </View>
+          </View>
+
+          {/* Start Game Button */}
+          <TouchableOpacity
+            onPress={startGame}
+            className="rounded-2xl py-5 mt-4"
+            style={{
+              backgroundColor: "#10b981",
+              shadowColor: "#10b981",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.5,
+              shadowRadius: 12,
+              elevation: 10,
+            }}
+          >
+            <Text className="text-white text-center font-bold text-xl">
+              🚀 Start Game
+            </Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 };

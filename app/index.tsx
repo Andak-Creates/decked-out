@@ -14,6 +14,7 @@ export default function SplashScreenPage() {
   const { user, loading } = useAuth();
   const [checkingVerification, setCheckingVerification] = useState(true);
 
+  console.log(checkingVerification);
   useEffect(() => {
     const prepare = async () => {
       try {
