@@ -1,17 +1,23 @@
-import { analytics } from "@/firebaseConfig";
-import { logEvent } from "firebase/analytics";
+import { supabase } from "@/lib/supabase";
 import { Platform } from "react-native";
 
-// Analytics helper functions
-export const trackEvent = (eventName: string, params?: { [key: string]: any }) => {
+export const trackEvent = async (
+  eventName: string,
+  params?: { [key: string]: any }
+) => {
   try {
-    // Only log on web for now (React Native requires additional native setup)
-    if (Platform.OS === "web" && analytics) {
-      logEvent(analytics, eventName, params);
-    } else {
-      // Log to console for React Native (can be replaced with native analytics later)
-      console.log(`[Analytics] ${eventName}`, params);
-    }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    await supabase.from("analytics_events").insert({
+      user_id: user?.id,
+      event_name: eventName,
+      event_params: params || {},
+      platform: Platform.OS,
+    });
+
+    console.log(`[Analytics] ${eventName}`, params);
   } catch (error) {
     console.error("Analytics error:", error);
   }
@@ -41,4 +47,3 @@ export const trackCategoryView = (category: string) => {
 export const trackDeckSelect = (deck: string, category: string) => {
   trackEvent("deck_select", { deck, category });
 };
-

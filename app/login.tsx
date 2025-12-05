@@ -1,9 +1,9 @@
-import { auth } from "@/firebaseConfig";
+import { supabase } from "@/lib/supabase";
 import { useRouter } from "expo-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   ImageBackground,
@@ -23,8 +23,9 @@ type LoginFormData = {
   password: string;
 };
 
-const login = () => {
+const Login = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const {
     control,
@@ -33,39 +34,34 @@ const login = () => {
   } = useForm<LoginFormData>();
 
   const onSubmit = async (data: LoginFormData) => {
+    setLoading(true);
     try {
-      const userCredentials = await signInWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
 
-      const user = userCredentials.user;
+      if (error) throw error;
 
-      router.replace("/categories");
+      if (authData.user) {
+        console.log("User logged in:", authData.user.email);
+        router.replace("/categories");
+      }
     } catch (error: any) {
       let message = "Login failed, try again";
 
-      // Switch logic
-      switch (error.code) {
-        case "auth/user-not-found":
-          message = "No account found with this email.";
-          break;
-
-        case "auth/wrong-password":
-          message = "Incorrect password.";
-          break;
-
-        case "auth/invalid-email":
-          message = "Invalid email address.";
-          break;
-
-        case "auth/network-request-failed":
-          message = "Network error, check your internet connection.";
-          break;
+      // Supabase error handling
+      if (error.message?.includes("Invalid login credentials")) {
+        message = "Invalid email or password.";
+      } else if (error.message?.includes("Email not confirmed")) {
+        message = "Please verify your email address.";
+      } else if (error.message?.includes("network")) {
+        message = "Network error, check your internet connection.";
       }
 
       Alert.alert("Login Error", message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -109,6 +105,7 @@ const login = () => {
                       placeholder="Email"
                       value={value}
                       onChangeText={onChange}
+                      editable={!loading}
                     />
                   )}
                 />
@@ -133,6 +130,7 @@ const login = () => {
                       placeholder="Password"
                       value={value}
                       onChangeText={onChange}
+                      editable={!loading}
                     />
                   )}
                 />
@@ -148,8 +146,14 @@ const login = () => {
                 <TouchableOpacity
                   onPress={handleSubmit(onSubmit)}
                   className="bg-[#2C003E] px-[40px] py-[10px] rounded-md"
+                  disabled={loading}
+                  style={{ opacity: loading ? 0.6 : 1 }}
                 >
-                  <Text className="text-white text-center">Log In</Text>
+                  {loading ? (
+                    <ActivityIndicator color="white" />
+                  ) : (
+                    <Text className="text-white text-center">Log In</Text>
+                  )}
                 </TouchableOpacity>
               </View>
 
@@ -170,4 +174,4 @@ const login = () => {
   );
 };
 
-export default login;
+export default Login;

@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context/SupabaseAuthContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -67,7 +67,7 @@ export default function SplashScreenPage() {
         resizeMode="cover"
       />
       <Text className="font-bold text-[#FFFFFF] mt-0 text-center text-2xl w-[80%] mx-auto">
-        Your Digital home for naughty Games?
+        Your Digital home for naughty Games
       </Text>
     </ImageBackground>
   );

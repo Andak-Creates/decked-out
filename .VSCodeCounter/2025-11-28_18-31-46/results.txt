@@ -1,0 +1,114 @@
+Date : 2025-11-28 18:31:46
+Directory : c:\Users\Andak\Desktop\deckedOut
+Total : 52 files,  20049 codes, 364 comments, 537 blanks, all 20950 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |          3 |     14,990 |          0 |          3 |     14,993 |
+| TypeScript JSX     |         18 |      3,660 |        165 |        372 |      4,197 |
+| TypeScript         |          6 |        949 |         36 |         49 |      1,034 |
+| Groovy             |          3 |        145 |         69 |         34 |        248 |
+| XML                |         11 |         96 |         23 |          9 |        128 |
+| JSON with Comments |          2 |         65 |          0 |          2 |         67 |
+| Batch              |          1 |         41 |         32 |         22 |         95 |
+| JavaScript         |          4 |         31 |          2 |          7 |         40 |
+| Markdown           |          1 |         31 |          0 |         20 |         51 |
+| Properties         |          2 |         21 |         37 |         16 |         74 |
+| PostCSS            |          1 |         20 |          0 |          3 |         23 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                              | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                 |         52 |     20,049 |        364 |        537 |     20,950 |
+| . (Files)                                                                                         |         11 |     15,117 |          3 |         33 |     15,153 |
+| android                                                                                           |         17 |        303 |        161 |         81 |        545 |
+| android (Files)                                                                                   |          4 |        108 |         70 |         48 |        226 |
+| android\app                                                                                       |         12 |        188 |         91 |         32 |        311 |
+| android\app (Files)                                                                               |          1 |         92 |         68 |         23 |        183 |
+| android\app\src                                                                                   |         11 |         96 |         23 |          9 |        128 |
+| android\app\src\debug                                                                             |          1 |          5 |          0 |          3 |          8 |
+| android\app\src\debugOptimized                                                                    |          1 |          5 |          0 |          3 |          8 |
+| android\app\src\main                                                                              |          9 |         86 |         23 |          3 |        112 |
+| android\app\src\main (Files)                                                                      |          1 |         31 |          0 |          0 |         31 |
+| android\app\src\main\res                                                                          |          8 |         55 |         23 |          3 |         81 |
+| android\app\src\main\res\drawable                                                                 |          2 |         18 |         23 |          3 |         44 |
+| android\app\src\main\res\mipmap-anydpi-v26                                                        |          2 |         10 |          0 |          0 |         10 |
+| android\app\src\main\res\values                                                                   |          3 |         26 |          0 |          0 |         26 |
+| android\app\src\main\res\values-night                                                             |          1 |          1 |          0 |          0 |          1 |
+| android\gradle                                                                                    |          1 |          7 |          0 |          1 |          8 |
+| android\gradle\wrapper                                                                            |          1 |          7 |          0 |          1 |          8 |
+| app                                                                                               |         17 |      3,440 |        153 |        330 |      3,923 |
+| app (Files)                                                                                       |         13 |      1,884 |         60 |        186 |      2,130 |
+| app\categories                                                                                    |          3 |      1,076 |         39 |         79 |      1,194 |
+| app\categories (Files)                                                                            |          2 |        719 |         27 |         49 |        795 |
+| app\categories\[categories]                                                                       |          1 |        357 |         12 |         30 |        399 |
+| app\game                                                                                          |          1 |        480 |         54 |         65 |        599 |
+| assets                                                                                            |          1 |        762 |         27 |         15 |        804 |
+| assets\games                                                                                      |          1 |        762 |         27 |         15 |        804 |
+| context                                                                                           |          2 |        240 |         12 |         45 |        297 |
+| lib                                                                                               |          1 |         12 |          0 |          3 |         15 |
+| utils                                                                                             |          3 |        175 |          8 |         30 |        213 |
++---------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                          | language           | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\Users\Andak\Desktop\deckedOut\README.md                                                        | Markdown           |         31 |          0 |         20 |         51 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\build.gradle                                         | Groovy             |         92 |         68 |         23 |        183 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\debugOptimized\AndroidManifest.xml               | XML                |          5 |          0 |          3 |          8 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\debug\AndroidManifest.xml                        | XML                |          5 |          0 |          3 |          8 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\main\AndroidManifest.xml                         | XML                |         31 |          0 |          0 |         31 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\main\res\drawable\ic_launcher_background.xml     | XML                |          6 |          0 |          0 |          6 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\main\res\drawable\rn_edit_text_material.xml      | XML                |         12 |         23 |          3 |         38 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\main\res\mipmap-anydpi-v26\ic_launcher.xml       | XML                |          5 |          0 |          0 |          5 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\main\res\mipmap-anydpi-v26\ic_launcher_round.xml | XML                |          5 |          0 |          0 |          5 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\main\res\values-night\colors.xml                 | XML                |          1 |          0 |          0 |          1 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\main\res\values\colors.xml                       | XML                |          6 |          0 |          0 |          6 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\main\res\values\strings.xml                      | XML                |          6 |          0 |          0 |          6 |
+| c:\Users\Andak\Desktop\deckedOut\android\app\src\main\res\values\styles.xml                       | XML                |         14 |          0 |          0 |         14 |
+| c:\Users\Andak\Desktop\deckedOut\android\build.gradle                                             | Groovy             |         20 |          1 |          4 |         25 |
+| c:\Users\Andak\Desktop\deckedOut\android\gradle.properties                                        | Properties         |         14 |         37 |         15 |         66 |
+| c:\Users\Andak\Desktop\deckedOut\android\gradle\wrapper\gradle-wrapper.properties                 | Properties         |          7 |          0 |          1 |          8 |
+| c:\Users\Andak\Desktop\deckedOut\android\gradlew.bat                                              | Batch              |         41 |         32 |         22 |         95 |
+| c:\Users\Andak\Desktop\deckedOut\android\settings.gradle                                          | Groovy             |         33 |          0 |          7 |         40 |
+| c:\Users\Andak\Desktop\deckedOut\app.json                                                         | JSON with Comments |         45 |          0 |          1 |         46 |
+| c:\Users\Andak\Desktop\deckedOut\app\PaywallScreen.tsx                                            | TypeScript JSX     |        274 |          7 |         26 |        307 |
+| c:\Users\Andak\Desktop\deckedOut\app\_layout.tsx                                                  | TypeScript JSX     |         16 |          0 |          3 |         19 |
+| c:\Users\Andak\Desktop\deckedOut\app\ageVerification.tsx                                          | TypeScript JSX     |         93 |          2 |         13 |        108 |
+| c:\Users\Andak\Desktop\deckedOut\app\categories\[categories]\[deck].tsx                           | TypeScript JSX     |        357 |         12 |         30 |        399 |
+| c:\Users\Andak\Desktop\deckedOut\app\categories\[category].tsx                                    | TypeScript JSX     |        384 |         13 |         24 |        421 |
+| c:\Users\Andak\Desktop\deckedOut\app\categories\index.tsx                                         | TypeScript JSX     |        335 |         14 |         25 |        374 |
+| c:\Users\Andak\Desktop\deckedOut\app\feedback.tsx                                                 | TypeScript JSX     |        188 |          7 |         16 |        211 |
+| c:\Users\Andak\Desktop\deckedOut\app\game\[deck].tsx                                              | TypeScript JSX     |        480 |         54 |         65 |        599 |
+| c:\Users\Andak\Desktop\deckedOut\app\globals.css                                                  | PostCSS            |         20 |          0 |          3 |         23 |
+| c:\Users\Andak\Desktop\deckedOut\app\help.tsx                                                     | TypeScript JSX     |        126 |          3 |         10 |        139 |
+| c:\Users\Andak\Desktop\deckedOut\app\index.tsx                                                    | TypeScript JSX     |         59 |          5 |         11 |         75 |
+| c:\Users\Andak\Desktop\deckedOut\app\login.tsx                                                    | TypeScript JSX     |        158 |          5 |         15 |        178 |
+| c:\Users\Andak\Desktop\deckedOut\app\settings.tsx                                                 | TypeScript JSX     |        320 |         14 |         24 |        358 |
+| c:\Users\Andak\Desktop\deckedOut\app\signUp.tsx                                                   | TypeScript JSX     |        233 |         10 |         21 |        264 |
+| c:\Users\Andak\Desktop\deckedOut\app\stats.tsx                                                    | TypeScript JSX     |        126 |          4 |         18 |        148 |
+| c:\Users\Andak\Desktop\deckedOut\app\terms.tsx                                                    | TypeScript JSX     |        147 |          0 |         13 |        160 |
+| c:\Users\Andak\Desktop\deckedOut\app\tutorial.tsx                                                 | TypeScript JSX     |        124 |          3 |         13 |        140 |
+| c:\Users\Andak\Desktop\deckedOut\assets\games\Decks.ts                                            | TypeScript         |        762 |         27 |         15 |        804 |
+| c:\Users\Andak\Desktop\deckedOut\babel.config.js                                                  | JavaScript         |          9 |          0 |          1 |         10 |
+| c:\Users\Andak\Desktop\deckedOut\config.json                                                      | JSON               |         45 |          0 |          1 |         46 |
+| c:\Users\Andak\Desktop\deckedOut\context\PremiumContext.tsx                                       | TypeScript JSX     |        184 |          8 |         32 |        224 |
+| c:\Users\Andak\Desktop\deckedOut\context\SupabaseAuthContext.tsx                                  | TypeScript JSX     |         56 |          4 |         13 |         73 |
+| c:\Users\Andak\Desktop\deckedOut\eslint.config.js                                                 | JavaScript         |          8 |          1 |          2 |         11 |
+| c:\Users\Andak\Desktop\deckedOut\lib\supabase.ts                                                  | TypeScript         |         12 |          0 |          3 |         15 |
+| c:\Users\Andak\Desktop\deckedOut\metro.config.js                                                  | JavaScript         |          6 |          0 |          3 |          9 |
+| c:\Users\Andak\Desktop\deckedOut\nativewind-env.d.ts                                              | TypeScript         |          0 |          1 |          1 |          2 |
+| c:\Users\Andak\Desktop\deckedOut\package-lock.json                                                | JSON               |     14,884 |          0 |          1 |     14,885 |
+| c:\Users\Andak\Desktop\deckedOut\package.json                                                     | JSON               |         61 |          0 |          1 |         62 |
+| c:\Users\Andak\Desktop\deckedOut\tailwind.config.js                                               | JavaScript         |          8 |          1 |          1 |         10 |
+| c:\Users\Andak\Desktop\deckedOut\tsconfig.json                                                    | JSON with Comments |         20 |          0 |          1 |         21 |
+| c:\Users\Andak\Desktop\deckedOut\utils\formatTime.ts                                              | TypeScript         |         12 |          0 |          2 |         14 |
+| c:\Users\Andak\Desktop\deckedOut\utils\supabaseAnalytics.ts                                       | TypeScript         |         39 |          1 |         10 |         50 |
+| c:\Users\Andak\Desktop\deckedOut\utils\supabaseStats.ts                                           | TypeScript         |        124 |          7 |         18 |        149 |
+| Total                                                                                             |                    |     20,049 |        364 |        537 |     20,950 |
++---------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

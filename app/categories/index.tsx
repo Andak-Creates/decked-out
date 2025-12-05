@@ -1,5 +1,7 @@
 import { Decks } from "@/assets/games/Decks";
-import { trackCategoryView } from "@/utils/analytics";
+import { isDeckPremium, usePremium } from "@/context/PremiumContext";
+import { trackCategoryView } from "@/utils/supabaseAnalytics";
+import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import * as React from "react";
@@ -17,12 +19,16 @@ const CategoryCard = ({
   item,
   index,
   onPress,
+  onPremiumPress,
 }: {
   item: (typeof Decks)[0];
   index: number;
   onPress: () => void;
+  onPremiumPress: () => void;
 }) => {
   const scaleAnim = React.useRef(new Animated.Value(1)).current;
+  const { isPremium } = usePremium();
+  const isLocked = isDeckPremium(item.slug) && !isPremium;
 
   // Get gradient colors for each category
   const getCategoryGradient = (index: number) => {
@@ -63,6 +69,15 @@ const CategoryCard = ({
     }).start();
   };
 
+  const handlePress = () => {
+    if (isLocked) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      onPremiumPress();
+    } else {
+      onPress();
+    }
+  };
+
   return (
     <Animated.View
       style={{
@@ -74,15 +89,17 @@ const CategoryCard = ({
         activeOpacity={0.9}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        onPress={onPress}
+        onPress={handlePress}
       >
         <View
           className="rounded-3xl overflow-hidden"
           style={{
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            shadowColor: gradient.start,
+            backgroundColor: isLocked
+              ? "rgba(0, 0, 0, 0.7)"
+              : "rgba(0, 0, 0, 0.5)",
+            shadowColor: isLocked ? "#000" : gradient.start,
             shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.4,
+            shadowOpacity: isLocked ? 0.3 : 0.4,
             shadowRadius: 16,
             elevation: 12,
           }}
@@ -91,20 +108,35 @@ const CategoryCard = ({
           <View
             className="absolute inset-0"
             style={{
-              backgroundColor: gradient.start,
-              opacity: 0.3,
+              backgroundColor: isLocked ? "#374151" : gradient.start,
+              opacity: isLocked ? 0.2 : 0.3,
             }}
           />
 
+          {/* Lock Overlay */}
+          {isLocked && (
+            <View className="absolute inset-0 items-center justify-center z-10 bg-black/40">
+              <View className="bg-black/80 rounded-2xl px-6 py-4 items-center">
+                <Ionicons name="lock-closed" size={40} color="#fbbf24" />
+                <Text className="text-yellow-400 text-xl font-bold mt-2">
+                  PREMIUM
+                </Text>
+              </View>
+            </View>
+          )}
+
           {/* Content */}
-          <View className="flex-row items-center p-6">
+          <View
+            className="flex-row items-center p-6"
+            style={{ opacity: isLocked ? 0.6 : 1 }}
+          >
             {/* Icon Container */}
             <View
               className="w-20 h-20 rounded-2xl items-center justify-center mr-4"
               style={{
                 backgroundColor: `rgba(255, 255, 255, 0.2)`,
                 borderWidth: 2,
-                borderColor: gradient.start,
+                borderColor: isLocked ? "#6b7280" : gradient.start,
               }}
             >
               <Text className="text-4xl">{icon}</Text>
@@ -112,27 +144,65 @@ const CategoryCard = ({
 
             {/* Text Content */}
             <View className="flex-1">
-              <Text className="text-white text-2xl font-bold mb-2">
-                {item.name}
-              </Text>
+              <View className="flex-row items-center mb-2">
+                <Text
+                  className="text-2xl font-bold"
+                  style={{ color: isLocked ? "#9ca3af" : "#ffffff" }}
+                >
+                  {item.name}
+                </Text>
+                {isLocked && (
+                  <View className="bg-yellow-500 px-2 py-1 rounded-full ml-2">
+                    <Text className="text-black text-xs font-bold">PRO</Text>
+                  </View>
+                )}
+              </View>
               {item.description && (
-                <Text className="text-white/80 text-base">
+                <Text
+                  className="text-base"
+                  style={{
+                    color: isLocked ? "#6b7280" : "rgba(255, 255, 255, 0.8)",
+                  }}
+                >
                   {item.description}
                 </Text>
               )}
               <View className="flex-row items-center mt-3">
-                <Text className="text-white/60 text-sm">
+                <Text
+                  className="text-sm"
+                  style={{
+                    color: isLocked ? "#6b7280" : "rgba(255, 255, 255, 0.6)",
+                  }}
+                >
                   {item.decks.length} deck
                   {item.decks.length !== 1 ? "s" : ""}
                 </Text>
-                <View className="w-1 h-1 bg-white/40 rounded-full mx-2" />
-                <Text className="text-white/60 text-sm">Tap to explore →</Text>
+                <View
+                  className="w-1 h-1 rounded-full mx-2"
+                  style={{
+                    backgroundColor: isLocked
+                      ? "#6b7280"
+                      : "rgba(255, 255, 255, 0.4)",
+                  }}
+                />
+                <Text
+                  className="text-sm"
+                  style={{
+                    color: isLocked ? "#fbbf24" : "rgba(255, 255, 255, 0.6)",
+                  }}
+                >
+                  {isLocked ? "Tap to unlock" : "Tap to explore →"}
+                </Text>
               </View>
             </View>
 
             {/* Arrow Icon */}
             <View className="ml-2">
-              <Text className="text-white/60 text-2xl">›</Text>
+              {isLocked ? (
+                <Ionicons name="lock-closed" size={24} color="#fbbf24" />
+              ) : (
+                <Text className="text-white/60 text-2xl">›</Text>
+              )}
             </View>
           </View>
 
@@ -140,7 +210,7 @@ const CategoryCard = ({
           <View
             className="h-1"
             style={{
-              backgroundColor: gradient.end,
+              backgroundColor: isLocked ? "#6b7280" : gradient.end,
               opacity: 0.8,
             }}
           />
@@ -152,6 +222,18 @@ const CategoryCard = ({
 
 const index = () => {
   const router = useRouter();
+  const { isPremium, timeRemaining, premiumType } = usePremium();
+
+  const navigateToPaywall = () => {
+    router.push("/PaywallScreen");
+  };
+
+  const formatTimeRemaining = (seconds: number): string => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    return `${minutes}m`;
+  };
 
   return (
     <ImageBackground
@@ -181,6 +263,85 @@ const index = () => {
           </TouchableOpacity>
         </View>
 
+        {/* Premium Status Banner */}
+        {isPremium && premiumType === "temporary" && timeRemaining && (
+          <TouchableOpacity
+            onPress={navigateToPaywall}
+            activeOpacity={0.8}
+            className="mb-6 rounded-2xl p-4"
+            style={{
+              backgroundColor: "rgba(239, 68, 68, 0.2)",
+              borderWidth: 2,
+              borderColor: "#ef4444",
+            }}
+          >
+            <View className="flex-row justify-between items-center">
+              <View>
+                <Text className="text-white font-bold text-base">
+                  ⏰ Premium Active
+                </Text>
+                <Text className="text-red-200 text-sm">All decks unlocked</Text>
+              </View>
+              <View className="bg-red-600 px-4 py-2 rounded-xl">
+                <Text className="text-white font-bold text-lg">
+                  {formatTimeRemaining(timeRemaining)}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+
+        {isPremium && premiumType === "subscription" && (
+          <View
+            className="mb-6 rounded-2xl p-4"
+            style={{
+              backgroundColor: "rgba(251, 191, 36, 0.2)",
+              borderWidth: 2,
+              borderColor: "#fbbf24",
+            }}
+          >
+            <View className="flex-row items-center">
+              <Text className="text-3xl mr-3">👑</Text>
+              <View>
+                <Text className="text-white font-bold text-base">
+                  Premium Member
+                </Text>
+                <Text className="text-yellow-100 text-sm">
+                  Unlimited access to all content
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* Not premium - show upgrade banner */}
+        {!isPremium && (
+          <TouchableOpacity
+            onPress={navigateToPaywall}
+            activeOpacity={0.8}
+            className="mb-6 rounded-2xl p-4"
+            style={{
+              backgroundColor: "rgba(251, 191, 36, 0.15)",
+              borderWidth: 2,
+              borderColor: "#fbbf24",
+            }}
+          >
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 mr-4">
+                <Text className="text-yellow-400 text-lg font-bold mb-1">
+                  🔥 Unlock All Spicy Decks
+                </Text>
+                <Text className="text-yellow-100 text-sm">
+                  Get premium for just $2.99
+                </Text>
+              </View>
+              <View className="bg-yellow-500 px-4 py-3 rounded-xl">
+                <Text className="text-black font-bold">Upgrade</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+
         <FlatList
           contentContainerStyle={{
             paddingBottom: 50,
@@ -200,6 +361,7 @@ const index = () => {
                   params: { category: item.slug },
                 });
               }}
+              onPremiumPress={navigateToPaywall}
             />
           )}
         />

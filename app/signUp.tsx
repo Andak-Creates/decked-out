@@ -1,9 +1,10 @@
+import { supabase } from "@/lib/supabase";
 import clsx from "clsx";
 import { useRouter } from "expo-router";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+  ActivityIndicator,
   Alert,
   Image,
   ImageBackground,
@@ -17,7 +18,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { auth } from "../firebaseConfig";
 
 type FormData = {
   email: string;
@@ -26,8 +26,10 @@ type FormData = {
   subscribeToNews: boolean;
 };
 
-const Login = () => {
+const SignUp = () => {
   const router = useRouter();
+  const [loading, setLoading] = React.useState(false);
+
   const {
     control,
     handleSubmit,
@@ -41,31 +43,54 @@ const Login = () => {
       return;
     }
 
-    // Firebase logic
+    setLoading(true);
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
-      const user = userCredential.user;
-      console.log("User registered:", user.email);
+      // Sign up with Supabase
+      const { data: authData, error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+      });
 
-      // Change route to categories
-      router.replace("/categories");
+      if (error) throw error;
+
+      if (authData.user) {
+        // Update profile with newsletter preference
+        await supabase
+          .from("profiles")
+          .update({ subscribe_to_news: data.subscribeToNews })
+          .eq("id", authData.user.id);
+
+        console.log("User registered:", authData.user.email);
+
+        // Check if email confirmation is required
+        if (authData.session) {
+          // Email confirmation not required, go to categories
+          router.replace("/categories");
+        } else {
+          // Email confirmation required
+          Alert.alert(
+            "Check Your Email",
+            "We've sent you a confirmation email. Please verify your email to continue.",
+            [{ text: "OK", onPress: () => router.replace("/login") }]
+          );
+        }
+      }
     } catch (error: any) {
-      let message = "something went wrong, try again";
+      let message = "Something went wrong, try again";
 
-      if (error.code === "auth/email-already-in-use") {
+      if (error.message?.includes("already registered")) {
         message = "This email is already in use.";
-      } else if (error.code === "auth/invalid-email") {
+      } else if (error.message?.includes("invalid email")) {
         message = "The email address is invalid.";
-      } else if (error.code === "auth/weak-password") {
+      } else if (error.message?.includes("Password")) {
         message = "Password should be at least 6 characters.";
-      } else if (error.code === "auth/network-request-failed") {
+      } else if (error.message?.includes("network")) {
         message = "Network error. Please check your internet connection.";
       }
+
       Alert.alert("Sign Up Error", message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -109,6 +134,7 @@ const Login = () => {
                       placeholder="Email"
                       value={value}
                       onChangeText={onChange}
+                      editable={!loading}
                     />
                   )}
                 />
@@ -133,6 +159,7 @@ const Login = () => {
                       placeholder="Password"
                       value={value}
                       onChangeText={onChange}
+                      editable={!loading}
                     />
                   )}
                 />
@@ -161,6 +188,7 @@ const Login = () => {
                       placeholder="Confirm Password"
                       value={value}
                       onChangeText={onChange}
+                      editable={!loading}
                     />
                   )}
                 />
@@ -171,7 +199,7 @@ const Login = () => {
                 )}
               </View>
 
-              {/* Stay Updated Checkbox (Optional) */}
+              {/* Stay Updated Checkbox */}
               <Controller
                 control={control}
                 name="subscribeToNews"
@@ -180,7 +208,8 @@ const Login = () => {
                   <View className="flex flex-row justify-center items-center w-[80%] gap-[10px]">
                     <TouchableOpacity
                       onPress={() => onChange(!value)}
-                      className="flex justify-center items-center my-2  border border-[#2c003e] rounded-sm w-[24px] h-[24px]"
+                      disabled={loading}
+                      className="flex justify-center items-center my-2 border border-[#2c003e] rounded-sm w-[24px] h-[24px]"
                     >
                       <Text
                         className={clsx(
@@ -204,13 +233,19 @@ const Login = () => {
                 <TouchableOpacity
                   onPress={handleSubmit(onSubmit)}
                   className="bg-[#2C003E] px-[40px] py-[10px] rounded-md"
+                  disabled={loading}
+                  style={{ opacity: loading ? 0.6 : 1 }}
                 >
-                  <Text className="text-white">Sign Up</Text>
+                  {loading ? (
+                    <ActivityIndicator color="white" />
+                  ) : (
+                    <Text className="text-white">Sign Up</Text>
+                  )}
                 </TouchableOpacity>
               </View>
 
               <View>
-                <Text className="flex justify-center items-center text-white ">
+                <Text className="flex justify-center items-center text-white">
                   already have an account?{" "}
                   <TouchableOpacity onPress={() => router.push("/login")}>
                     <Text className="text-blue-400 underline">Log in</Text>
@@ -225,4 +260,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;

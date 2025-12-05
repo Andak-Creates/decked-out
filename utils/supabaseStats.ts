@@ -1,7 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Decks } from "@/assets/games/Decks";
-
-const STATS_KEY = "@deckedOut:gameStats";
+import { supabase } from "@/lib/supabase";
 
 export type GameStats = {
   totalGames: number;
@@ -19,15 +17,36 @@ export type GameStats = {
 
 export const loadStats = async (): Promise<GameStats> => {
   try {
-    const statsData = await AsyncStorage.getItem(STATS_KEY);
-    if (statsData) {
-      return JSON.parse(statsData);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error("No user");
+
+    const { data, error } = await supabase
+      .from("game_stats")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    if (error) throw error;
+
+    if (data) {
+      return {
+        totalGames: data.total_games,
+        totalCardsSeen: data.total_cards_seen,
+        favoriteCategory: data.favorite_category || "None",
+        favoriteDeck: data.favorite_deck || "None",
+        lastPlayed: data.last_played
+          ? new Date(data.last_played).toLocaleDateString()
+          : "Never",
+        cardsByCategory: data.cards_by_category || {},
+        decksPlayed: data.decks_played || {},
+      };
     }
   } catch (error) {
     console.error("Error loading stats:", error);
   }
 
-  // Return default stats
   return {
     totalGames: 0,
     totalCardsSeen: 0,
@@ -39,26 +58,22 @@ export const loadStats = async (): Promise<GameStats> => {
   };
 };
 
-export const saveStats = async (stats: GameStats): Promise<void> => {
-  try {
-    await AsyncStorage.setItem(STATS_KEY, JSON.stringify(stats));
-  } catch (error) {
-    console.error("Error saving stats:", error);
-  }
-};
-
 export const updateGameStats = async (
   categorySlug: string,
   deckSlug: string,
   cardsSeen: number
 ): Promise<void> => {
   try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
     const stats = await loadStats();
 
     // Update totals
     stats.totalGames += 1;
     stats.totalCardsSeen += cardsSeen;
-    stats.lastPlayed = new Date().toLocaleDateString();
 
     // Update category stats
     if (!stats.cardsByCategory[categorySlug]) {
@@ -75,7 +90,8 @@ export const updateGameStats = async (
 
     // Find favorite category
     const favoriteCategory = Object.entries(stats.cardsByCategory).reduce(
-      (a, b) => (stats.cardsByCategory[a[0]] > stats.cardsByCategory[b[0]] ? a : b),
+      (a, b) =>
+        stats.cardsByCategory[a[0]] > stats.cardsByCategory[b[0]] ? a : b,
       ["None", 0]
     )[0];
 
@@ -89,10 +105,19 @@ export const updateGameStats = async (
     const category = Decks.find((c) => c.slug === categorySlug);
     const deck = category?.decks.find((d) => d.slug === deckSlug);
 
-    stats.favoriteCategory = category?.name || "None";
-    stats.favoriteDeck = deck?.name || "None";
-
-    await saveStats(stats);
+    // Update in Supabase
+    await supabase
+      .from("game_stats")
+      .update({
+        total_games: stats.totalGames,
+        total_cards_seen: stats.totalCardsSeen,
+        favorite_category: category?.name || "None",
+        favorite_deck: deck?.name || "None",
+        last_played: new Date().toISOString(),
+        cards_by_category: stats.cardsByCategory,
+        decks_played: stats.decksPlayed,
+      })
+      .eq("user_id", user.id);
   } catch (error) {
     console.error("Error updating stats:", error);
   }
@@ -100,9 +125,24 @@ export const updateGameStats = async (
 
 export const resetStats = async (): Promise<void> => {
   try {
-    await AsyncStorage.removeItem(STATS_KEY);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
+
+    await supabase
+      .from("game_stats")
+      .update({
+        total_games: 0,
+        total_cards_seen: 0,
+        favorite_category: "None",
+        favorite_deck: "None",
+        last_played: null,
+        cards_by_category: {},
+        decks_played: {},
+      })
+      .eq("user_id", user.id);
   } catch (error) {
     console.error("Error resetting stats:", error);
   }
 };
-

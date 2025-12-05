@@ -1,3 +1,4 @@
+import { GameStats, loadStats, resetStats } from "@/utils/supabaseStats";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -7,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { loadStats, resetStats, type GameStats } from "@/utils/stats";
 
 const Stats = () => {
   const router = useRouter();
@@ -79,8 +79,12 @@ const Stats = () => {
           <Text className="text-white text-xl font-bold mb-4">Overview</Text>
 
           <View className="mb-4">
-            <Text className="text-white/60 text-sm mb-1">Total Games Played</Text>
-            <Text className="text-white text-3xl font-bold">{stats.totalGames}</Text>
+            <Text className="text-white/60 text-sm mb-1">
+              Total Games Played
+            </Text>
+            <Text className="text-white text-3xl font-bold">
+              {stats.totalGames}
+            </Text>
           </View>
 
           <View className="mb-4">
@@ -110,7 +114,9 @@ const Stats = () => {
           <Text className="text-white text-xl font-bold mb-4">Favorites</Text>
 
           <View className="mb-4">
-            <Text className="text-white/60 text-sm mb-1">Favorite Category</Text>
+            <Text className="text-white/60 text-sm mb-1">
+              Favorite Category
+            </Text>
             <Text className="text-white text-xl font-semibold">
               {stats.favoriteCategory}
             </Text>
@@ -139,4 +145,3 @@ const Stats = () => {
 };
 
 export default Stats;
-

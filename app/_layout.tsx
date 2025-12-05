@@ -1,5 +1,6 @@
 import "@/app/globals.css";
-import { AuthProvider } from "@/context/AuthContext";
+import { PremiumProvider } from "@/context/PremiumContext";
+import { AuthProvider } from "@/context/SupabaseAuthContext";
 import { Stack } from "expo-router";
 
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -8,7 +9,9 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <Stack screenOptions={{ headerShown: false }} />
+        <PremiumProvider>
+          <Stack screenOptions={{ headerShown: false }} />
+        </PremiumProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

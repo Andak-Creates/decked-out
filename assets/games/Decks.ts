@@ -163,6 +163,178 @@ export const Decks = [
         ],
       },
 
+      {
+        name: "Charades",
+        description: "Act it out, guess it quick!",
+        genderCheck: false,
+        slug: "charades",
+        type: "team-based", // NEW TYPE for team games
+
+        // Charades cards
+        cards: [
+          {
+            type: "action",
+            text: "A monkey eating a banana",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "Someone taking a selfie",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "A chef cooking pasta",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "Someone stuck in traffic",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "action",
+            text: "A DJ at a party",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "action",
+            text: "Someone on a first date",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "action",
+            text: "A spy on a secret mission",
+            timer: 60,
+            difficulty: "hard",
+          },
+          {
+            type: "action",
+            text: "Someone trying to parallel park",
+            timer: 60,
+            difficulty: "hard",
+          },
+          {
+            type: "action",
+            text: "A yoga instructor",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "Someone getting a haircut",
+            timer: 60,
+            difficulty: "easy",
+          },
+          // Movie titles
+          {
+            type: "movie",
+            text: "Titanic",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "movie",
+            text: "The Lion King",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "movie",
+            text: "Frozen",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "movie",
+            text: "Jurassic Park",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "movie",
+            text: "The Matrix",
+            timer: 60,
+            difficulty: "medium",
+          },
+          // Songs
+          {
+            type: "song",
+            text: "Happy Birthday",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "song",
+            text: "Let It Go (Frozen)",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "song",
+            text: "Bohemian Rhapsody",
+            timer: 60,
+            difficulty: "hard",
+          },
+          // Animals
+          {
+            type: "animal",
+            text: "A penguin waddling",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "animal",
+            text: "A kangaroo hopping",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "animal",
+            text: "An elephant using its trunk",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "animal",
+            text: "A flamingo standing on one leg",
+            timer: 60,
+            difficulty: "medium",
+          },
+          // Professions
+          {
+            type: "profession",
+            text: "A dentist",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "profession",
+            text: "A firefighter",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "profession",
+            text: "A magician",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "profession",
+            text: "A news reporter",
+            timer: 60,
+            difficulty: "medium",
+          },
+        ],
+      },
+
       // Never Have I Ever
       {
         name: "Never Have I Ever",
@@ -425,6 +597,178 @@ export const Decks = [
             text: "Let {PlayerB} read your private messages",
             timer: 60,
             requiresOppositeGender: false,
+          },
+        ],
+      },
+
+      {
+        name: "Charades",
+        description: "Act it out, guess it quick!",
+        genderCheck: false,
+        slug: "charades",
+        type: "team-based", // NEW TYPE for team games
+
+        // Charades cards
+        cards: [
+          {
+            type: "action",
+            text: "A monkey eating a banana",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "Someone taking a selfie",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "A chef cooking pasta",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "Someone stuck in traffic",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "action",
+            text: "A DJ at a party",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "action",
+            text: "Someone on a first date",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "action",
+            text: "A spy on a secret mission",
+            timer: 60,
+            difficulty: "hard",
+          },
+          {
+            type: "action",
+            text: "Someone trying to parallel park",
+            timer: 60,
+            difficulty: "hard",
+          },
+          {
+            type: "action",
+            text: "A yoga instructor",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "Someone getting a haircut",
+            timer: 60,
+            difficulty: "easy",
+          },
+          // Movie titles
+          {
+            type: "movie",
+            text: "Titanic",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "movie",
+            text: "The Lion King",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "movie",
+            text: "Frozen",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "movie",
+            text: "Jurassic Park",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "movie",
+            text: "The Matrix",
+            timer: 60,
+            difficulty: "medium",
+          },
+          // Songs
+          {
+            type: "song",
+            text: "Happy Birthday",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "song",
+            text: "Let It Go (Frozen)",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "song",
+            text: "Bohemian Rhapsody",
+            timer: 60,
+            difficulty: "hard",
+          },
+          // Animals
+          {
+            type: "animal",
+            text: "A penguin waddling",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "animal",
+            text: "A kangaroo hopping",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "animal",
+            text: "An elephant using its trunk",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "animal",
+            text: "A flamingo standing on one leg",
+            timer: 60,
+            difficulty: "medium",
+          },
+          // Professions
+          {
+            type: "profession",
+            text: "A dentist",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "profession",
+            text: "A firefighter",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "profession",
+            text: "A magician",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "profession",
+            text: "A news reporter",
+            timer: 60,
+            difficulty: "medium",
           },
         ],
       },
@@ -707,6 +1051,178 @@ export const Decks = [
             text: "Let {PlayerB} post whatever they want on your social media",
             timer: null,
             requiresOppositeGender: false,
+          },
+        ],
+      },
+
+      {
+        name: "Charades",
+        description: "Act it out, guess it quick!",
+        genderCheck: false,
+        slug: "charades",
+        type: "team-based", // NEW TYPE for team games
+
+        // Charades cards
+        cards: [
+          {
+            type: "action",
+            text: "A monkey eating a banana",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "Someone taking a selfie",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "A chef cooking pasta",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "Someone stuck in traffic",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "action",
+            text: "A DJ at a party",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "action",
+            text: "Someone on a first date",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "action",
+            text: "A spy on a secret mission",
+            timer: 60,
+            difficulty: "hard",
+          },
+          {
+            type: "action",
+            text: "Someone trying to parallel park",
+            timer: 60,
+            difficulty: "hard",
+          },
+          {
+            type: "action",
+            text: "A yoga instructor",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "action",
+            text: "Someone getting a haircut",
+            timer: 60,
+            difficulty: "easy",
+          },
+          // Movie titles
+          {
+            type: "movie",
+            text: "Titanic",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "movie",
+            text: "The Lion King",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "movie",
+            text: "Frozen",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "movie",
+            text: "Jurassic Park",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "movie",
+            text: "The Matrix",
+            timer: 60,
+            difficulty: "medium",
+          },
+          // Songs
+          {
+            type: "song",
+            text: "Happy Birthday",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "song",
+            text: "Let It Go (Frozen)",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "song",
+            text: "Bohemian Rhapsody",
+            timer: 60,
+            difficulty: "hard",
+          },
+          // Animals
+          {
+            type: "animal",
+            text: "A penguin waddling",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "animal",
+            text: "A kangaroo hopping",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "animal",
+            text: "An elephant using its trunk",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "animal",
+            text: "A flamingo standing on one leg",
+            timer: 60,
+            difficulty: "medium",
+          },
+          // Professions
+          {
+            type: "profession",
+            text: "A dentist",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "profession",
+            text: "A firefighter",
+            timer: 60,
+            difficulty: "easy",
+          },
+          {
+            type: "profession",
+            text: "A magician",
+            timer: 60,
+            difficulty: "medium",
+          },
+          {
+            type: "profession",
+            text: "A news reporter",
+            timer: 60,
+            difficulty: "medium",
           },
         ],
       },
