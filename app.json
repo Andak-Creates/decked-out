@@ -2,13 +2,14 @@
   "expo": {
     "name": "deckedOut",
     "slug": "deckedOut",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "deckedout",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "buildNumber": "2",
       "supportsTablet": true,
       "bundleIdentifier": "com.vwindi.deckedout",
       "infoPlist": {
