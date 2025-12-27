@@ -21,7 +21,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.deckedOut"
+      "package": "com.vwindi.deckedout"
     },
     "web": {
       "bundler": "metro",
@@ -40,12 +40,17 @@
         }
       ],
       "expo-secure-store",
-      "expo-audio"
+      "expo-audio",
+      "expo-asset",
+      "expo-web-browser",
+      "expo-av"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
+      "supabaseUrl": "https://hsnaosoavdrhoqkqalxy.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzbmFvc29hdmRyaG9xa3FhbHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMDA4ODgsImV4cCI6MjA3OTc3Njg4OH0.8ZnqRisHNT00jC5U_Veor9ZPipSANj6wnmJ3DKwmIUE",
       "router": {},
       "eas": {
         "projectId": "68d27e95-9a64-474e-a515-8c6ffcb0f2e5"

@@ -40,12 +40,7 @@ type Team = {
 
 const TeamGame = () => {
   const router = useRouter();
-  const {
-    deck,
-    category,
-    teams: teamsParam,
-    filterByGender,
-  } = useLocalSearchParams();
+  const { deck, teams: teamsParam } = useLocalSearchParams();
 
   const findDeck = () => {
     for (const cat of Decks) {

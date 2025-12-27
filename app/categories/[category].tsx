@@ -279,9 +279,9 @@ const CardCategory = () => {
       {/* Dark overlay */}
       <View className="absolute inset-0 bg-black/40" />
 
-      <View className="flex-1 px-6 pt-16 pb-8">
+      <View className="flex-1 px-6 pt-16">
         {/* Header with back button */}
-        <View className="flex-row items-center mb-6 mt-[30px] pt-[30px]">
+        <View className="flex-row items-center mb-6  pt-[30px]">
           <TouchableOpacity
             onPress={() => router.back()}
             className="bg-black/50 px-4 py-2 rounded-xl mr-4 absolute top-0 left-0"

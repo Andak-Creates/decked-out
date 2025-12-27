@@ -452,6 +452,7 @@ const DeckSetUp = () => {
         pathname: "/game/[deck]",
         params: {
           deck: currentDeck.slug,
+          category: categories as string,
           players: JSON.stringify(players),
           filterByGender: filterByGender.toString(),
         },

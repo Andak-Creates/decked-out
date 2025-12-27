@@ -1,22 +1,26 @@
 import { supabase } from "@/lib/supabase";
+import {
+  getAvailablePackages,
+  initializeRevenueCat,
+  purchasePackage as purchasePackageService,
+  restorePurchases as restorePurchasesService,
+  SubscriptionPackage,
+} from "@/services/paymentService";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { Platform } from "react-native";
 import { useAuth } from "./SupabaseAuthContext";
-
-interface MockPackage {
-  identifier: string;
-  product: {
-    priceString: string;
-  };
-}
 
 interface PremiumContextType {
   isPremium: boolean;
   isLoading: boolean;
-  packages: MockPackage[];
-  purchasePackage: (pkg: MockPackage) => Promise<boolean>;
+  packages: SubscriptionPackage[];
+  purchasePackage: (
+    pkg: SubscriptionPackage
+  ) => Promise<{ success: boolean; paymentUrl?: string; error?: string }>;
   restorePurchases: () => Promise<boolean>;
   timeRemaining: number | null;
   premiumType: "subscription" | "temporary" | null;
+  isRevenueCatInitialized: boolean;
 }
 
 const PremiumContext = createContext<PremiumContextType | undefined>(undefined);
@@ -31,22 +35,34 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({
   const [premiumType, setPremiumType] = useState<
     "subscription" | "temporary" | null
   >(null);
+  const [packages, setPackages] = useState<SubscriptionPackage[]>([]);
+  const [isRevenueCatInitialized, setIsRevenueCatInitialized] = useState(false);
 
-  // Mock packages for testing
-  const packages: MockPackage[] = [
-    { identifier: "deckedout_3hour", product: { priceString: "$2.99" } },
-    { identifier: "deckedout_6hour", product: { priceString: "$4.99" } },
-    { identifier: "deckedout_weekly", product: { priceString: "$4.99" } },
-    { identifier: "deckedout_monthly", product: { priceString: "$9.99" } },
-    { identifier: "deckedout_annual", product: { priceString: "$59.99" } },
-  ];
-
+  // Initialize RevenueCat and set up listeners
   useEffect(() => {
-    if (user) {
-      loadPremiumStatus();
-    } else {
-      setIsLoading(false);
-    }
+    const initialize = async () => {
+      if (user) {
+        try {
+          // Initialize RevenueCat
+          const result = await initializeRevenueCat(user.id);
+          setIsRevenueCatInitialized(!result.isMock);
+
+          // Load available packages
+          const availablePackages = await getAvailablePackages();
+          setPackages(availablePackages);
+
+          // Load initial premium status
+          await loadPremiumStatus();
+        } catch (error) {
+          console.error("Error initializing payment service:", error);
+          setIsLoading(false);
+        }
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    initialize();
   }, [user]);
 
   // Timer for temporary passes
@@ -71,15 +87,30 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!user) return;
 
     try {
+      // Fallback to Supabase if RevenueCat not initialized or no active entitlement
       const { data, error } = await supabase
         .from("premium_status")
         .select("*")
         .eq("user_id", user.id)
         .single();
 
-      if (error) throw error;
+      if (error && error.code !== "PGRST116") {
+        // PGRST116 is "no rows returned" which is fine
+        console.error("❌ Error loading premium status from Supabase:", error);
+        throw error;
+      }
+
+      console.log("📊 Premium status from Supabase:", {
+        data,
+        error: error?.code,
+      });
 
       if (data) {
+        console.log("✅ Setting premium status:", {
+          isPremium: data.is_premium,
+          premiumType: data.premium_type,
+          expiresAt: data.expires_at,
+        });
         setIsPremium(data.is_premium);
         setPremiumType(data.premium_type);
 
@@ -93,7 +124,13 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({
           } else {
             await handleTemporaryPassExpired();
           }
+        } else {
+          setTimeRemaining(null);
         }
+      } else {
+        setIsPremium(false);
+        setPremiumType(null);
+        setTimeRemaining(null);
       }
     } catch (error) {
       console.error("Error loading premium status:", error);
@@ -123,54 +160,36 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const purchasePackage = async (pkg: MockPackage): Promise<boolean> => {
-    if (!user) return false;
+  const purchasePackage = async (
+    pkg: SubscriptionPackage
+  ): Promise<{ success: boolean; paymentUrl?: string; error?: string }> => {
+    if (!user || !user.email) {
+      return { success: false, error: "User not authenticated" };
+    }
 
     try {
-      console.log("🎉 MOCK PURCHASE:", pkg.identifier);
+      const result = await purchasePackageService(pkg, user.id, user.email);
 
-      // Simulate purchase delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (result.success) {
+        // If Android and Paystack payment URL is returned, return it
+        if (Platform.OS === "android" && result.paymentUrl) {
+          return { success: true, paymentUrl: result.paymentUrl };
+        }
 
-      // Check if it's a temporary pass
-      if (
-        pkg.identifier.includes("3hour") ||
-        pkg.identifier.includes("6hour")
-      ) {
-        const hours = pkg.identifier.includes("3hour") ? 3 : 6;
-        const expiresAt = new Date(Date.now() + hours * 60 * 60 * 1000);
-
-        await supabase
-          .from("premium_status")
-          .update({
-            is_premium: true,
-            premium_type: "temporary",
-            expires_at: expiresAt.toISOString(),
-          })
-          .eq("user_id", user.id);
-
-        setTimeRemaining(hours * 60 * 60);
-        setIsPremium(true);
-        setPremiumType("temporary");
-        return true;
+        // For iOS or successful mock purchases, reload premium status
+        console.log("🔄 Reloading premium status after purchase...");
+        await loadPremiumStatus();
+        console.log(
+          "✅ Premium status reloaded. Current isPremium:",
+          isPremium
+        );
+        return { success: true };
+      } else {
+        return { success: false, error: result.error };
       }
-
-      // Regular subscription
-      await supabase
-        .from("premium_status")
-        .update({
-          is_premium: true,
-          premium_type: "subscription",
-          expires_at: null,
-        })
-        .eq("user_id", user.id);
-
-      setIsPremium(true);
-      setPremiumType("subscription");
-      return true;
-    } catch (error) {
-      console.error("Mock purchase error:", error);
-      return false;
+    } catch (error: any) {
+      console.error("Purchase error:", error);
+      return { success: false, error: error.message || "Purchase failed" };
     }
   };
 
@@ -178,15 +197,13 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!user) return false;
 
     try {
-      console.log("🔄 MOCK RESTORE PURCHASES");
-
-      // Simulate restore delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      await loadPremiumStatus();
-      return isPremium;
+      const result = await restorePurchasesService(user.id);
+      if (result.success) {
+        await loadPremiumStatus();
+      }
+      return result.success;
     } catch (error) {
-      console.error("Mock restore error:", error);
+      console.error("Restore error:", error);
       return false;
     }
   };
@@ -201,6 +218,7 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({
         restorePurchases,
         timeRemaining,
         premiumType,
+        isRevenueCatInitialized,
       }}
     >
       {children}

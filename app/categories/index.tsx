@@ -244,9 +244,9 @@ const index = () => {
       {/* Dark overlay for better text readability */}
       <View className="absolute inset-0 bg-black/40" />
 
-      <View className="flex-1 px-6 pt-16 pb-8">
+      <View className="flex-1 px-6 pt-[60px] ">
         {/* Header */}
-        <View className="flex-row items-center relative pt-[60px] justify-between mb-8 mt-[20px]">
+        <View className="flex-row items-center relative pt-[40px] justify-between mb-8 ">
           <View className="flex-1 items-center">
             <Text className="text-white text-4xl font-bold text-center mb-2">
               What are we in the mood for?
@@ -332,7 +332,7 @@ const index = () => {
                   🔥 Unlock All Spicy Decks
                 </Text>
                 <Text className="text-yellow-100 text-sm">
-                  Get premium for just $2.99
+                  click to get premium access now!
                 </Text>
               </View>
               <View className="bg-yellow-500 px-4 py-3 rounded-xl">
@@ -345,7 +345,7 @@ const index = () => {
         <FlatList
           contentContainerStyle={{
             paddingBottom: 50,
-            paddingTop: 20,
+            paddingTop: 10,
           }}
           data={Decks}
           keyExtractor={(item) => item.slug}

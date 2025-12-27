@@ -32,17 +32,21 @@ type Player = {
 
 const Game = () => {
   const router = useRouter();
-  const { deck, players, filterByGender } = useLocalSearchParams();
+  const { deck, players, filterByGender, category } = useLocalSearchParams();
 
   // Find the deck and category
   const findDeckAndCategory = () => {
-    for (const category of Decks) {
-      const foundDeck = category.decks.find((d) => d.slug === deck);
-      if (foundDeck) {
-        return { deck: foundDeck, category: category };
-      }
+    const currentCategory = Decks.find((c) => c.slug === category);
+    const currentDeck = currentCategory?.decks.find((d) => d.slug === deck);
+
+    if (!currentDeck || !currentCategory) {
+      Alert.alert("Error", "Deck or category not found", [
+        { text: "OK", onPress: () => router.back() },
+      ]);
+      return { deck: undefined, category: undefined };
     }
-    return { deck: undefined, category: undefined };
+
+    return { deck: currentDeck, category: currentCategory };
   };
 
   const { deck: currentDeck, category: currentCategory } =
@@ -468,8 +472,8 @@ const Game = () => {
                 ⚠️ Content Warning
               </Text>
               <Text className="text-white/90 text-sm text-center mb-3">
-                This game contains adult content including explicit language and
-                mature themes. Play responsibly.
+                This game may contain adult content including explicit language
+                and mature themes. Play responsibly.
               </Text>
               <TouchableOpacity
                 onPress={() => setShowContentWarning(false)}

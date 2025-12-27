@@ -67,7 +67,7 @@ export default function SplashScreenPage() {
         resizeMode="cover"
       />
       <Text className="font-bold text-[#FFFFFF] mt-0 text-center text-2xl w-[80%] mx-auto">
-        Your Digital home for naughty Games
+        Your Digital home for Spicy Games
       </Text>
     </ImageBackground>
   );
