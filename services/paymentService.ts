@@ -1,21 +1,24 @@
 import { supabase } from "@/lib/supabase";
+import Constants from "expo-constants";
 import { Platform } from "react-native";
 import Purchases, {
   CustomerInfo,
   PurchasesPackage,
 } from "react-native-purchases";
 
-// RevenueCat API Keys - Replace with your actual keys
+// RevenueCat API Keys with fallbacks
 const REVENUECAT_API_KEY_IOS =
-  process.env.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY || "";
+  process.env.EXPO_PUBLIC_REVENUECAT_IOS_API_KEY ||
+  Constants.expoConfig?.extra?.revenueCatIosApiKey ||
+  "";
 
 const REVENUECAT_API_KEY_ANDROID =
   process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_API_KEY || "";
 
-// Paystack configuration - Replace with your actual keys
+// Paystack configuration
 const PAYSTACK_PUBLIC_KEY = process.env.EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY || "";
 
-// Backend API configuration - Replace with your backend URL
+// Backend API configuration
 const BACKEND_API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "";
 
 export interface SubscriptionPackage {
@@ -27,41 +30,76 @@ export interface SubscriptionPackage {
   duration: "6hour" | "24hour" | "weekly" | "monthly" | "annual";
 }
 
-// Initialize RevenueCat
+// Initialize RevenueCat with timeout
 export const initializeRevenueCat = async (userId: string) => {
+  console.log("🔧 Initializing RevenueCat...");
+
   try {
     const apiKey =
       Platform.OS === "ios"
         ? REVENUECAT_API_KEY_IOS
         : REVENUECAT_API_KEY_ANDROID;
 
-    // For now, use mock mode if keys are not set
+    console.log("🔍 RevenueCat key check:", {
+      platform: Platform.OS,
+      hasKey: !!apiKey,
+      keyLength: apiKey?.length || 0,
+    });
+
+    // Use mock mode if keys are not set
     if (!apiKey || apiKey.length < 10) {
       console.log("🧪 RevenueCat in MOCK MODE - API key not configured");
       return { isMock: true };
     }
 
-    await Purchases.configure({ apiKey });
-    await Purchases.logIn(userId);
+    // Configure with timeout
+    const configurePromise = Purchases.configure({ apiKey });
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Configure timeout")), 3000)
+    );
+
+    await Promise.race([configurePromise, timeoutPromise]);
+
+    // Login with timeout
+    const loginPromise = Purchases.logIn(userId);
+    await Promise.race([loginPromise, timeoutPromise]);
 
     console.log("✅ RevenueCat initialized for", Platform.OS);
     return { isMock: false };
   } catch (error) {
-    console.error("Error initializing RevenueCat:", error);
+    console.error("❌ RevenueCat initialization error:", error);
     return { isMock: true };
   }
 };
 
-// Get available packages from RevenueCat (iOS) or return mock packages
+// Get available packages with timeout
 export const getAvailablePackages = async (): Promise<
   SubscriptionPackage[]
 > => {
+  console.log("📦 Getting available packages...");
+
   try {
     if (Platform.OS === "ios") {
-      // Try to get real packages from RevenueCat
-      const offerings = await Purchases.getOfferings();
+      // Try to get real packages from RevenueCat with timeout
+      const offeringsPromise = Purchases.getOfferings();
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Get offerings timeout")), 3000)
+      );
+
+      const offerings = await Promise.race([
+        offeringsPromise,
+        timeoutPromise,
+      ]).catch((error) => {
+        console.warn("Failed to get RevenueCat offerings:", error);
+        return { current: null };
+      });
 
       if (offerings.current && offerings.current.availablePackages.length > 0) {
+        console.log(
+          "✅ Got",
+          offerings.current.availablePackages.length,
+          "packages from RevenueCat"
+        );
         return offerings.current.availablePackages.map((pkg) => ({
           identifier: pkg.identifier,
           title: getPackageTitle(pkg.identifier),
@@ -74,9 +112,10 @@ export const getAvailablePackages = async (): Promise<
     }
 
     // Return mock packages for iOS (when no Apple Developer account) or Android
+    console.log("📦 Using mock packages");
     return getMockPackages();
   } catch (error) {
-    console.error("Error getting packages:", error);
+    console.error("❌ Error getting packages:", error);
     return getMockPackages();
   }
 };
@@ -146,6 +185,8 @@ const purchaseIOSPackage = async (
   userId: string
 ): Promise<{ success: boolean; error?: string }> => {
   try {
+    console.log("🍎 Starting iOS purchase...");
+
     // Get offerings from RevenueCat
     const offerings = await Purchases.getOfferings();
 
@@ -158,8 +199,6 @@ const purchaseIOSPackage = async (
     }
 
     // Find the matching package
-    // Note: Package identifiers in RevenueCat might be different from your internal IDs
-    // You may need to map: deckedout_monthly -> $rc_monthly, etc.
     let purchasesPackage: PurchasesPackage | null | undefined;
 
     // Try exact match first
@@ -206,7 +245,7 @@ const purchaseIOSPackage = async (
     console.log("✅ iOS purchase successful!");
     return { success: true };
   } catch (error: any) {
-    console.error("iOS purchase error:", error);
+    console.error("❌ iOS purchase error:", error);
 
     // Handle specific error cases
     if (error.userCancelled) {
@@ -257,7 +296,6 @@ const purchaseAndroidPackageMock = async (
     // Also sync to RevenueCat for tracking (optional, but good for analytics)
     try {
       await Purchases.logIn(userId);
-      // Note: RevenueCat won't have real subscription, but user ID will be tracked
       console.log("📱 Android subscription synced to RevenueCat (mock)");
     } catch (error) {
       console.warn("Could not sync to RevenueCat:", error);
@@ -267,87 +305,6 @@ const purchaseAndroidPackageMock = async (
   } catch (error: any) {
     console.error("Android mock purchase error:", error);
     return { success: false, error: error.message || "Purchase failed" };
-  }
-};
-
-// Create Paystack payment via backend
-const createPaystackPayment = async (
-  pkg: SubscriptionPackage,
-  userId: string,
-  userEmail: string
-): Promise<string> => {
-  try {
-    // Get Supabase session for authentication
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) {
-      throw new Error("User not authenticated");
-    }
-
-    // Call your backend API to create Paystack payment
-    const response = await fetch(
-      `${BACKEND_API_URL}/api/payments/paystack/create`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Add your authentication header here
-          // Example: "Authorization": `Bearer ${session.access_token}`,
-          // Or: "X-API-Key": "your-api-key",
-        },
-        body: JSON.stringify({
-          userId,
-          userEmail,
-          packageIdentifier: pkg.identifier,
-          amount: pkg.price,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `Backend error: ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (!data.success || !data.paymentUrl) {
-      throw new Error(data.error || "Failed to create payment");
-    }
-
-    // Store payment reference in Supabase for local tracking
-    if (data.paymentReference) {
-      await supabase.from("paystack_payments").insert({
-        user_id: userId,
-        package_identifier: pkg.identifier,
-        payment_reference: data.paymentReference,
-        amount: Math.round(pkg.price * 100),
-        status: "pending",
-        created_at: new Date().toISOString(),
-      });
-    }
-
-    return data.paymentUrl;
-  } catch (error: any) {
-    console.error("Error creating Paystack payment:", error);
-
-    // Fallback to mock for testing if backend is not available
-    if (BACKEND_API_URL.includes("your-backend-api.com")) {
-      console.warn("⚠️ Using mock payment - configure BACKEND_API_URL");
-      const paymentReference = `deckedout_${userId}_${Date.now()}`;
-      await supabase.from("paystack_payments").insert({
-        user_id: userId,
-        package_identifier: pkg.identifier,
-        payment_reference: paymentReference,
-        amount: Math.round(pkg.price * 100),
-        status: "pending",
-        created_at: new Date().toISOString(),
-      });
-      return `https://paystack.com/pay/${paymentReference}`;
-    }
-
-    throw error;
   }
 };
 
@@ -390,12 +347,6 @@ export const verifyPaystackPayment = async (
 
     if (data.success && data.status === "completed") {
       // Payment verified by backend
-      // Backend has already:
-      // 1. Verified with Paystack
-      // 2. Updated Supabase premium_status
-      // 3. Synced to RevenueCat
-
-      // Update local payment record
       await supabase
         .from("paystack_payments")
         .update({ status: "completed", verified_at: new Date().toISOString() })
@@ -416,7 +367,7 @@ export const verifyPaystackPayment = async (
     console.error("Payment verification error:", error);
 
     // Fallback: check local Supabase record
-    if (BACKEND_API_URL.includes("your-backend-api.com")) {
+    if (!BACKEND_API_URL || BACKEND_API_URL.includes("your-backend-api.com")) {
       console.warn("⚠️ Using local verification - configure BACKEND_API_URL");
       const { data: paymentData } = await supabase
         .from("paystack_payments")
@@ -434,41 +385,15 @@ export const verifyPaystackPayment = async (
   }
 };
 
-// Sync Android subscription to RevenueCat
-const syncAndroidSubscriptionToRevenueCat = async (
-  packageIdentifier: string,
-  userId: string,
-  paymentReference: string
-) => {
-  try {
-    // Create a subscription in RevenueCat for Android users
-    // This allows RevenueCat to track Android subscriptions even though payment is via Paystack
-    await Purchases.logIn(userId);
-
-    // You can use RevenueCat's REST API to create a subscription
-    // Or use their webhook system to sync Paystack payments
-    // For now, we'll just log it
-    console.log("📱 Syncing Android subscription to RevenueCat:", {
-      userId,
-      packageIdentifier,
-      paymentReference,
-    });
-
-    // In production, you'd call RevenueCat's REST API:
-    // POST https://api.revenuecat.com/v1/subscribers/{userId}/subscriptions
-    // With the Paystack payment details
-  } catch (error) {
-    console.error("Error syncing to RevenueCat:", error);
-  }
-};
-
 // Sync RevenueCat subscription to Supabase
 const syncSubscriptionToSupabase = async (
   customerInfo: CustomerInfo,
   userId: string
 ) => {
   try {
-    // Use "DeckedOut Pro" entitlement (matches revenueCatService)
+    console.log("💾 Syncing subscription to Supabase...");
+
+    // Use "DeckedOut Pro" entitlement
     const isPremium =
       customerInfo.entitlements.active["DeckedOut Pro"] !== undefined;
     const activeSubscription =
@@ -492,9 +417,11 @@ const syncSubscriptionToSupabase = async (
         expires_at: expiresAt,
         updated_at: new Date().toISOString(),
       });
+
+      console.log("✅ Subscription synced to Supabase");
     }
   } catch (error) {
-    console.error("Error syncing subscription to Supabase:", error);
+    console.error("❌ Error syncing subscription to Supabase:", error);
   }
 };
 
@@ -544,10 +471,13 @@ export const restorePurchases = async (
   userId: string
 ): Promise<{ success: boolean }> => {
   try {
+    console.log("🔄 Restoring purchases...");
+
     if (Platform.OS === "ios") {
       // iOS: Restore from Apple/RevenueCat
       const customerInfo = await Purchases.restorePurchases();
       await syncSubscriptionToSupabase(customerInfo, userId);
+      console.log("✅ iOS purchases restored");
       return { success: true };
     } else {
       // Android: Check Supabase for mock subscriptions
@@ -558,10 +488,11 @@ export const restorePurchases = async (
         .eq("is_premium", true)
         .single();
 
+      console.log("✅ Android restore check:", !!data);
       return { success: !!data };
     }
   } catch (error) {
-    console.error("Error restoring purchases:", error);
+    console.error("❌ Error restoring purchases:", error);
     return { success: false };
   }
 };

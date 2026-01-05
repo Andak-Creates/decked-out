@@ -2,7 +2,7 @@
   "expo": {
     "name": "deckedOut",
     "slug": "deckedOut",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
     "scheme": "deckedout",
@@ -51,6 +51,7 @@
     "extra": {
       "supabaseUrl": "https://hsnaosoavdrhoqkqalxy.supabase.co",
       "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzbmFvc29hdmRyaG9xa3FhbHh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQyMDA4ODgsImV4cCI6MjA3OTc3Njg4OH0.8ZnqRisHNT00jC5U_Veor9ZPipSANj6wnmJ3DKwmIUE",
+      "revenueCatIosApiKey": "appl_saQqVmeeTtffOEcddmNyUQItbUA",
       "router": {},
       "eas": {
         "projectId": "68d27e95-9a64-474e-a515-8c6ffcb0f2e5"

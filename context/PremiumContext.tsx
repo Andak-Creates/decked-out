@@ -41,24 +41,77 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({
   // Initialize RevenueCat and set up listeners
   useEffect(() => {
     const initialize = async () => {
-      if (user) {
-        try {
-          // Initialize RevenueCat
-          const result = await initializeRevenueCat(user.id);
+      console.log("🚀 PremiumContext: Starting initialization...");
+
+      // CRITICAL: Set maximum timeout to prevent hanging
+      const timeoutId = setTimeout(() => {
+        console.error("⏰ PremiumContext timeout - forcing completion");
+        setIsLoading(false);
+      }, 10000); // 10 second maximum
+
+      try {
+        if (user) {
+          console.log("👤 User found:", user.id);
+
+          // Initialize RevenueCat with timeout
+          console.log("🔧 Initializing RevenueCat...");
+          const result = await Promise.race([
+            initializeRevenueCat(user.id),
+            new Promise<any>((_, reject) =>
+              setTimeout(
+                () => reject(new Error("RevenueCat init timeout")),
+                3000
+              )
+            ),
+          ]).catch((error) => {
+            console.warn("RevenueCat initialization failed:", error);
+            return { isMock: true };
+          });
+
+          console.log("✅ RevenueCat result:", result);
           setIsRevenueCatInitialized(!result.isMock);
 
-          // Load available packages
-          const availablePackages = await getAvailablePackages();
+          // Load available packages with timeout
+          console.log("📦 Loading packages...");
+          const availablePackages = await Promise.race([
+            getAvailablePackages(),
+            new Promise<SubscriptionPackage[]>((_, reject) =>
+              setTimeout(() => reject(new Error("Packages timeout")), 3000)
+            ),
+          ]).catch((error) => {
+            console.warn("Failed to load packages:", error);
+            return [];
+          });
+
+          console.log("✅ Packages loaded:", availablePackages.length);
           setPackages(availablePackages);
 
-          // Load initial premium status
-          await loadPremiumStatus();
-        } catch (error) {
-          console.error("Error initializing payment service:", error);
-          setIsLoading(false);
+          // Load initial premium status with timeout
+          console.log("💎 Loading premium status...");
+          await Promise.race([
+            loadPremiumStatus(),
+            new Promise((_, reject) =>
+              setTimeout(
+                () => reject(new Error("Premium status timeout")),
+                3000
+              )
+            ),
+          ]).catch((error) => {
+            console.warn("Failed to load premium status:", error);
+            setIsLoading(false); // Ensure loading is set to false on error
+          });
+
+          console.log("✅ Premium status loaded");
+        } else {
+          console.log("⚠️ No user found, skipping initialization");
         }
-      } else {
+      } catch (error) {
+        console.error("❌ Error initializing payment service:", error);
+      } finally {
+        // CRITICAL: Always clear timeout and set loading to false
+        clearTimeout(timeoutId);
         setIsLoading(false);
+        console.log("✅ PremiumContext initialization complete");
       }
     };
 
@@ -84,9 +137,14 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [timeRemaining]);
 
   const loadPremiumStatus = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log("⚠️ No user in loadPremiumStatus");
+      return;
+    }
 
     try {
+      console.log("📡 Fetching premium status from Supabase...");
+
       // Fallback to Supabase if RevenueCat not initialized or no active entitlement
       const { data, error } = await supabase
         .from("premium_status")
@@ -128,15 +186,19 @@ export const PremiumProvider: React.FC<{ children: React.ReactNode }> = ({
           setTimeRemaining(null);
         }
       } else {
+        console.log("ℹ️ No premium status data found");
         setIsPremium(false);
         setPremiumType(null);
         setTimeRemaining(null);
       }
     } catch (error) {
       console.error("Error loading premium status:", error);
-    } finally {
-      setIsLoading(false);
+      // Don't throw - let it fail gracefully
+      setIsPremium(false);
+      setPremiumType(null);
+      setTimeRemaining(null);
     }
+    // Note: setIsLoading is handled in the main initialize function's finally block
   };
 
   const handleTemporaryPassExpired = async () => {

@@ -15,13 +15,7 @@ import {
   View,
 } from "react-native";
 
-import Purchases, {
-  CustomerInfo,
-  PurchasesError,
-  PurchasesOffering,
-} from "react-native-purchases";
-
-import RevenueCatUI from "react-native-purchases-ui";
+import Purchases, { PurchasesOffering } from "react-native-purchases";
 
 interface RevenueCatPaywallProps {
   visible: boolean;
@@ -67,6 +61,21 @@ export const RevenueCatPaywall: React.FC<RevenueCatPaywallProps> = ({
     }
   };
 
+  const presentPaywall = async () => {
+    try {
+      if (offering?.availablePackages.length) {
+        const package_ = offering.availablePackages[0];
+        await Purchases.purchasePackage(package_);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        onPurchaseSuccess?.();
+        onClose();
+      }
+    } catch (error: any) {
+      console.error("Paywall error:", error);
+      Alert.alert("Error", error.message || "Failed to complete purchase");
+    }
+  };
+
   if (!visible) return null;
 
   return (
@@ -96,36 +105,17 @@ export const RevenueCatPaywall: React.FC<RevenueCatPaywallProps> = ({
             </Text>
           </View>
         ) : offering ? (
-          <RevenueCatUI.Paywall
-            offering={offering}
-            onPurchaseCompleted={(customerInfo: CustomerInfo) => {
-              Haptics.notificationAsync(
-                Haptics.NotificationFeedbackType.Success
-              );
-              onPurchaseSuccess?.();
-              onClose();
-            }}
-            onPurchaseError={(error: PurchasesError) => {
-              console.error("Purchase error:", error);
-              Alert.alert(
-                "Purchase Failed",
-                error.message || "Unable to complete purchase"
-              );
-            }}
-            onRestoreCompleted={() => {
-              Alert.alert(
-                "Purchases Restored",
-                "Your purchases have been restored."
-              );
-            }}
-            onRestoreError={(error: PurchasesError) => {
-              Alert.alert(
-                "Restore Failed",
-                error.message || "Unable to restore purchases"
-              );
-            }}
-            style={{ flex: 1 }}
-          />
+          <View className="flex-1 items-center justify-center px-6">
+            <Text className="text-white text-xl font-bold mb-4 text-center">
+              Choose Your Plan
+            </Text>
+            <TouchableOpacity
+              onPress={presentPaywall}
+              className="bg-yellow-500 px-6 py-3 rounded-xl"
+            >
+              <Text className="text-black font-bold text-base">View Plans</Text>
+            </TouchableOpacity>
+          </View>
         ) : (
           <View className="flex-1 items-center justify-center px-6">
             <Ionicons name="alert-circle" size={64} color="#ef4444" />
